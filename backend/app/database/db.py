@@ -8,11 +8,17 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    echo=settings.DEBUG,
-)
+if settings.DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        settings.DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        echo=settings.DEBUG,
+    )
+else:
+    engine = create_engine(
+        settings.DATABASE_URL,
+        echo=settings.DEBUG,
+    )
 
 SessionLocal = sessionmaker(
     autocommit=False,
