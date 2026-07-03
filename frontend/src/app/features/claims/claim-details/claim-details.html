@@ -1,0 +1,126 @@
+@if (loading) {
+  <mat-spinner></mat-spinner>
+} @else {
+  <mat-card>
+    <mat-card-title>
+      {{ claim.claim_number }}
+    </mat-card-title>
+
+    <mat-card-content>
+      <p>
+        <strong>Status:</strong>
+
+        {{ claim.status }}
+      </p>
+
+      <p>
+        <strong>Customer:</strong>
+
+        {{ claim.customer_name }}
+      </p>
+
+      <p>
+        <strong>Policy:</strong>
+
+        {{ claim.policy_number }}
+      </p>
+
+      <p>
+        <strong>Amount:</strong>
+
+        ₹ {{ claim.claim_amount }}
+      </p>
+
+      <p>
+        <strong>Documents Uploaded:</strong>
+        {{ claim.documents?.length || 0 }}
+      </p>
+
+      <p>
+        {{ claim.description }}
+      </p>
+
+      <app-claim-bundle-upload
+        [claimId]="claim.id"
+        (uploadComplete)="loadClaim(claim.id)"
+      ></app-claim-bundle-upload>
+
+      <!-- Uploaded Files List -->
+      @if (claim.documents?.length || claim.images?.length) {
+        <div class="uploaded-files">
+          <div class="files-header">
+            <h4>Uploaded Files</h4>
+            <button mat-stroked-button color="warn" (click)="clearAllFiles()" class="clear-all-btn">
+              <mat-icon>delete_sweep</mat-icon> Clear All
+            </button>
+          </div>
+          <ul>
+            <li *ngFor="let doc of claim.documents" class="file-item">
+              <span class="file-info"
+                >📄 <strong>{{ doc.document_type }}</strong
+                >: {{ doc.file_name }}</span
+              >
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteDocument(doc.id)"
+                class="delete-btn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </li>
+            <li *ngFor="let img of claim.images" class="file-item">
+              <span class="file-info">📷 <strong>Damage Image</strong>: {{ img.file_name }}</span>
+              <button mat-icon-button color="warn" (click)="deleteImage(img.id)" class="delete-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </li>
+          </ul>
+        </div>
+      }
+
+      <hr />
+
+      <h3>AI Analysis</h3>
+
+      <p>Run OCR, GPT-5.5, YOLO and Fraud Detection.</p>
+
+      @if (!claim.documents?.length) {
+        <p class="warning-text">
+          ⚠️ Please upload at least one claim document (e.g., invoice, repair bill) before analyzing
+          the claim.
+        </p>
+      }
+
+      <div class="ai-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="analyzeClaim()"
+          [disabled]="analyzing || !claim.documents?.length"
+        >
+          <mat-icon>psychology</mat-icon>
+          {{ analyzing ? 'Analyzing...' : 'Analyze Claim' }}
+        </button>
+
+        @if (claim.has_ai_report) {
+          <button
+            mat-raised-button
+            color="accent"
+            [routerLink]="['/ai-reports']"
+            class="view-report-btn"
+          >
+            <mat-icon>assessment</mat-icon>
+            View AI Report
+          </button>
+        }
+      </div>
+
+      @if (analyzing) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+
+        <p>AI analysis is running...</p>
+      }
+    </mat-card-content>
+  </mat-card>
+}

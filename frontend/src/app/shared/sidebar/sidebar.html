@@ -1,0 +1,36 @@
+<mat-nav-list class="portal-sidebar-list">
+
+  <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>dashboard</mat-icon>
+    <span matListItemTitle class="nav-text">Dashboard</span>
+  </a>
+
+  <a mat-list-item routerLink="/plans" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>local_offer</mat-icon>
+    <span matListItemTitle class="nav-text">Insurance Plans</span>
+  </a>
+
+  <a mat-list-item routerLink="/policies" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>verified_user</mat-icon>
+    <span matListItemTitle class="nav-text">My Policies</span>
+  </a>
+
+  <a mat-list-item routerLink="/claims" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>assignment</mat-icon>
+    <span matListItemTitle class="nav-text">My Claims</span>
+  </a>
+
+  <a mat-list-item routerLink="/ai-reports" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>auto_awesome</mat-icon>
+    <span matListItemTitle class="nav-text">AI Reports</span>
+  </a>
+
+
+  @if (isAdminOrAgent) {
+    <a mat-list-item routerLink="/admin" routerLinkActive="active-link" class="nav-item">
+      <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+      <span matListItemTitle class="nav-text">Admin Panel</span>
+    </a>
+  }
+
+</mat-nav-list>

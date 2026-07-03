@@ -1,0 +1,27 @@
+mat-card{
+
+    max-width:700px;
+
+    margin:40px auto;
+
+}
+
+form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.buttons{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:15px;
+
+}

@@ -1,0 +1,147 @@
+<div class="page-header">
+  <h2>Claims</h2>
+
+  <button mat-raised-button color="primary" routerLink="/claims/create">
+    <mat-icon>add</mat-icon>
+
+    Create Claim
+  </button>
+</div>
+
+<div class="toolbar">
+  <mat-form-field appearance="outline">
+    <mat-label>Search Claims</mat-label>
+
+    <input matInput placeholder="Claim Number, Title..." (keyup)="applyFilter($event)" />
+
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="view-toggle">
+    <button mat-icon-button [color]="viewMode === 'table' ? 'primary' : ''" (click)="viewMode = 'table'" matTooltip="Table View">
+      <mat-icon>view_list</mat-icon>
+    </button>
+    <button mat-icon-button [color]="viewMode === 'cards' ? 'primary' : ''" (click)="viewMode = 'cards'" matTooltip="Card Grid View">
+      <mat-icon>grid_view</mat-icon>
+    </button>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+} @else {
+  @if (dataSource.data.length === 0) {
+    <div class="empty-state">
+      <mat-icon>assignment</mat-icon>
+
+      <h3>No Claims Found</h3>
+
+      <p>Create your first insurance claim.</p>
+
+      <button mat-raised-button color="primary" routerLink="/claims/create">
+        <mat-icon>add</mat-icon>
+        Create Claim
+      </button>
+    </div>
+  } @else {
+    @if (viewMode === 'table') {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- Claim Number -->
+          <ng-container matColumnDef="claim_number">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Claim No.</th>
+            <td mat-cell *matCellDef="let claim">{{ claim.claim_number }}</td>
+          </ng-container>
+
+          <!-- Title -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let claim">{{ claim.title }}</td>
+          </ng-container>
+
+          <!-- Amount -->
+          <ng-container matColumnDef="claim_amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+            <td mat-cell *matCellDef="let claim">₹ {{ claim.claim_amount | number }}</td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let claim">
+              <span class="status" [ngClass]="getStatusClass(claim.status)">
+                {{ claim.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Submitted -->
+          <ng-container matColumnDef="submitted_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Submitted</th>
+            <td mat-cell *matCellDef="let claim">{{ claim.submitted_at | date: 'dd MMM yyyy' }}</td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let claim">
+              <button mat-icon-button color="primary" class="action-btn" matTooltip="View" (click)="viewClaim(claim.id)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" class="action-btn" matTooltip="Edit" (click)="editClaim(claim.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" class="action-btn" matTooltip="Delete" (click)="deleteClaim(claim.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons></mat-paginator>
+    } @else {
+      <div class="claims-cards-grid">
+        @for (claim of dataSource.filteredData; track claim.id) {
+          <mat-card class="claim-item-card">
+            <mat-card-header>
+              <div class="claim-card-badge">
+                <span class="status" [ngClass]="getStatusClass(claim.status)">{{ claim.status }}</span>
+              </div>
+              <mat-card-title>{{ claim.title }}</mat-card-title>
+              <mat-card-subtitle>Claim No: {{ claim.claim_number }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="claim-desc">{{ claim.description }}</p>
+              <div class="claim-card-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Amount:</span>
+                  <span class="meta-value amount">₹ {{ claim.claim_amount | number }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Submitted:</span>
+                  <span class="meta-value">{{ claim.submitted_at | date: 'dd MMM yyyy' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions class="claim-card-actions">
+              <button mat-icon-button color="primary" class="action-btn" matTooltip="View" (click)="viewClaim(claim.id)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" class="action-btn" matTooltip="Edit" (click)="editClaim(claim.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" class="action-btn" matTooltip="Delete" (click)="deleteClaim(claim.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+}

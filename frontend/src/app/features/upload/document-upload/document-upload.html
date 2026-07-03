@@ -1,0 +1,22 @@
+<h3>Upload Supporting Document</h3>
+
+<input
+  type="file"
+  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+  (change)="onFileSelected($event)"
+/>
+
+@if(selectedFile){
+  <p>
+    Selected: <strong>{{selectedFile.name}}</strong>
+  </p>
+}
+
+<button
+  mat-raised-button
+  color="primary"
+  (click)="upload()"
+  [disabled]="!selectedFile || loading">
+  Upload Document
+</button>
+

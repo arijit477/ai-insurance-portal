@@ -1,0 +1,28 @@
+# Node
+node_modules/
+.angular/
+dist/
+.vercel/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.uv/
+
+# Local databases & user uploads
+*.db
+uploads/
+
+# Environment / Secret configs
+.env
+.env.*
+!.env.example
+*.local
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,81 @@
+.portal-navbar {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  padding: 0 24px !important;
+  height: 64px !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.logo-icon {
+  color: #4f46e5;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: #111827;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.35 !important;
+  padding: 4px 0 !important;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 20px;
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border-radius: 20px;
+}
+
+.user-icon {
+  color: #6b7280;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.logout-btn {
+  color: #ef4444 !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logout-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

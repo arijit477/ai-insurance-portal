@@ -1,0 +1,89 @@
+<div class="dashboard">
+
+    <h2>Dashboard</h2>
+
+    <p class="welcome">
+        Welcome to AI Insurance Portal
+    </p>
+
+    <div class="cards">
+
+        <mat-card class="card">
+
+            <mat-icon>verified_user</mat-icon>
+
+            <h3>Active Policies</h3>
+
+            <h1>{{dashboard.active_policies}}</h1>
+
+        </mat-card>
+
+        <mat-card class="card">
+
+            <mat-icon>assignment</mat-icon>
+
+            <h3>Total Claims</h3>
+
+            <h1>{{dashboard.total_claims}}</h1>
+
+        </mat-card>
+
+        <mat-card class="card">
+
+            <mat-icon>pending_actions</mat-icon>
+
+            <h3>Pending Claims</h3>
+
+            <h1>{{dashboard.pending_claims}}</h1>
+
+        </mat-card>
+
+        <mat-card class="card">
+
+            <mat-icon>smart_toy</mat-icon>
+
+            <h3>AI Reports</h3>
+
+            <h1>{{dashboard.ai_reports}}</h1>
+
+        </mat-card>
+
+    </div>
+
+    <h2 class="section-title">
+        Quick Actions
+    </h2>
+
+    <div class="actions">
+
+        <button
+            mat-raised-button
+            color="primary"
+            (click)="createClaim()">
+
+            Create Claim
+
+        </button>
+
+        
+
+        <button
+            mat-raised-button
+            (click)="viewAiReports()">
+
+            View AI Reports
+
+        </button>
+
+        <button
+            mat-raised-button
+            (click)="browsePlans()">
+
+            Browse Plans
+
+        </button>
+
+    </div>
+
+
+</div>

@@ -1,0 +1,171 @@
+<div class="ai-report-page">
+  <!-- Loading state -->
+  @if (loading) {
+    <div class="loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Consulting AuraGuard AI Engine…</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (error && !loading) {
+    <mat-card class="error-card">
+      <mat-card-header>
+        <mat-icon color="warn">warning</mat-icon>
+        <mat-card-title>AI Analysis Pending</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" [routerLink]="['/ai-reports']">
+          Back to Reports
+        </button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Report content -->
+  @if (report && !loading) {
+    <div class="report-header">
+      <div class="header-title">
+        <h2>AI Co-Pilot Assessment</h2>
+        <p class="subtitle">Verification, Fraud Analysis, and Damage Diagnostics</p>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="exportReport()" class="download-btn">
+          <mat-icon>download</mat-icon> Export PDF
+        </button>
+        <button mat-stroked-button [routerLink]="['/ai-reports']" class="back-btn">
+          <mat-icon>arrow_back</mat-icon> Back to Reports
+        </button>
+      </div>
+    </div>
+
+    <div class="report-grid">
+      <!-- Main Column: Summary and Verification -->
+      <div class="column-main">
+        <!-- Claim Summary -->
+        <mat-card class="summary-card">
+          <mat-card-header>
+            <mat-icon>summarize</mat-icon>
+            <mat-card-title>AI Summary & Verification</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="summary-text">{{ report.claim_summary }}</p>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Damage Analysis (Vision YOLO / GPT) -->
+        <mat-card class="vision-card">
+          <mat-card-header>
+            <mat-icon>photo_camera</mat-icon>
+            <mat-card-title>Computer Vision Damage Assessment</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (report.damage_analysis) {
+              <div class="damage-metrics">
+                <div class="metric">
+                  <span class="label">Vehicle Class:</span>
+                  <span class="value">{{ report.damage_analysis.metadata?.vehicle_type || 'Sedan' }}</span>
+                </div>
+                <div class="metric">
+                  <span class="label">Severity Level:</span>
+                  <span class="value severity-high">{{ report.damage_analysis.summary?.overall_severity || 'Moderate' }}</span>
+                </div>
+                <div class="metric">
+                  <span class="label">Confidence Score:</span>
+                  <span class="value">{{ (maxConfidence * 100) | number:'1.0-1' }}%</span>
+                </div>
+              </div>
+
+              @if (report.damage_analysis.damages && report.damage_analysis.damages.length > 0) {
+                <div class="damages-list-container">
+                  <h4 class="damages-title">Detected Damages ({{ report.damage_analysis.summary?.total_damages || 0 }})</h4>
+                  <ul class="damages-list">
+                    @for (damage of report.damage_analysis.damages; track damage.class_name) {
+                      <li class="damage-list-item">
+                        <span class="damage-class">💥 {{ damage.class_name }}</span>
+                        <div class="damage-details">
+                          <span class="damage-conf">Confidence: {{ (damage.confidence * 100) | number:'1.0-1' }}%</span>
+                          <span class="damage-cost">Est. Cost: ₹{{ damage.estimated_cost | number }}</span>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                  <div class="total-repair-cost">
+                    <strong>Total Estimated Repair Cost:</strong> 
+                    <span>₹{{ report.damage_analysis.summary?.estimated_repair_cost | number }}</span>
+                  </div>
+                </div>
+              } @else {
+                <p class="damage-desc">No physical damages detected in the uploaded images.</p>
+              }
+            } @else {
+              <p class="no-data">No visual damage images were uploaded for computerized analysis.</p>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- OCR Text -->
+        <mat-card class="ocr-card">
+          <mat-card-header>
+            <mat-icon>description</mat-icon>
+            <mat-card-title>Extracted OCR Document Text</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ocr-text-container">
+              <pre>{{ report.ocr_text || 'No text extracted.' }}</pre>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Sidebar Column: Fraud score and Metadata -->
+      <div class="column-sidebar">
+        <!-- Fraud Check -->
+        <mat-card class="fraud-card">
+          <mat-card-header>
+            <mat-icon>security</mat-icon>
+            <mat-card-title>Fraud Risk Check</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="fraud-content">
+            <div class="gauge-container">
+              <div class="score-value" [class.risk-high]="report.fraud_score > 70" [class.risk-med]="report.fraud_score >= 30 && report.fraud_score <= 70" [class.risk-low]="report.fraud_score < 30">
+                {{ report.fraud_score }}%
+              </div>
+              <span class="gauge-subtitle">Risk Level Indicator</span>
+            </div>
+            
+            <div class="fraud-notes">
+              <p><strong>Assessment Notes:</strong></p>
+              <p class="notes-text">
+                {{ report.fraud_analysis?.reasoning || 'No immediate anomalies or fraudulent patterns detected in the claim document sequence.' }}
+              </p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Audit metadata -->
+        <mat-card class="audit-card">
+          <mat-card-header>
+            <mat-icon>info</mat-icon>
+            <mat-card-title>AuraGuard Audits</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="audit-row">
+              <span class="label">AI Model:</span>
+              <span class="value font-mono">{{ report.model_name || 'Gemini Pro / GPT-4' }}</span>
+            </div>
+            <div class="audit-row">
+              <span class="label">Duration:</span>
+              <span class="value">{{ report.processing_time | number:'1.2-2' }} sec</span>
+            </div>
+            <div class="audit-row">
+              <span class="label">Timestamp:</span>
+              <span class="value">{{ report.created_at | date:'short' }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

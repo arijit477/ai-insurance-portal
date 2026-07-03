@@ -1,0 +1,49 @@
+.portal-sidebar-list {
+  padding-top: 16px !important;
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid rgba(229, 231, 235, 0.5);
+  height: calc(100vh - 64px);
+  box-sizing: border-box;
+}
+
+.nav-item {
+  height: 48px !important;
+  margin: 4px 12px !important;
+  border-radius: 8px !important;
+  color: #4b5563 !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.nav-item:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  transform: translateX(4px);
+}
+
+.nav-item mat-icon {
+  margin-right: 12px !important;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.nav-item:hover mat-icon {
+  color: #4f46e5;
+}
+
+.active-link {
+  background: #eef2ff !important;
+  color: #4f46e5 !important;
+  font-weight: 600 !important;
+}
+
+.active-link mat-icon {
+  color: #4f46e5 !important;
+}
+
+.nav-text {
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+}

@@ -1,0 +1,67 @@
+@if(loading) {
+  <div class="loading">
+    <mat-spinner diameter="56"></mat-spinner>
+    <p>Loading plan details…</p>
+  </div>
+}
+
+@else {
+  <div class="details-page">
+
+    <div class="details-header">
+      <div class="header-top">
+        <div class="category-badge" [class]="'badge-' + plan.category.toLowerCase()">
+          {{ plan.category }}
+        </div>
+        <span class="status-chip" [class]="plan.is_active ? 'active' : 'inactive'">
+          {{ plan.is_active ? 'Available' : 'Unavailable' }}
+        </span>
+      </div>
+      <h1>{{ plan.plan_name }}</h1>
+      <p class="description">{{ plan.description }}</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon">🛡️</span>
+        <span class="stat-label">Coverage Amount</span>
+        <span class="stat-value">₹ {{ plan.coverage_amount | number }}</span>
+      </div>
+      <div class="stat-card highlight">
+        <span class="stat-icon">💳</span>
+        <span class="stat-label">Annual Premium</span>
+        <span class="stat-value">₹ {{ plan.premium | number }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📅</span>
+        <span class="stat-label">Duration</span>
+        <span class="stat-value">{{ plan.duration_months }} Months</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="purchase-btn"
+        [disabled]="purchasing || !plan.is_active"
+        (click)="purchasePolicy()">
+        @if(purchasing) {
+          <mat-spinner diameter="20" color="accent"></mat-spinner>
+          Processing…
+        } @else {
+          Purchase Policy
+        }
+      </button>
+
+      @if(!plan.is_active) {
+        <p class="unavailable-note">This plan is currently unavailable for purchase.</p>
+      }
+    </div>
+
+  </div>
+}

@@ -1,0 +1,24 @@
+<h3>Upload Vehicle Image</h3>
+
+<input
+  type="file"
+  accept="image/*"
+  (change)="onFileSelected($event)">
+
+@if(preview){
+
+<img
+  [src]="preview"
+  class="preview">
+
+}
+
+<button
+  mat-raised-button
+  color="primary"
+  (click)="upload()"
+  [disabled]="loading || !selectedFile">
+
+Upload Image
+
+</button>

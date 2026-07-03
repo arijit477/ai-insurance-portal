@@ -1,0 +1,30 @@
+[project]
+name = "ai-insurance-portal"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "alembic>=1.18.5",
+    "asyncio>=4.0.0",
+    "email-validator>=2.3.0",
+    "fastapi>=0.138.2",
+    "pymupdf>=1.24.0",
+    "numpy>=2.3.5",
+    "openai>=2.44.0",
+    "opencv-python>=4.13.0.92",
+    "paddleocr>=3.7.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt==4.1.3",
+
+
+    "pillow>=12.2.0",
+    "psycopg[binary]>=3.3.4",
+    "pydantic-settings>=2.14.2",
+    "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.32",
+    "sqlalchemy>=2.0.51",
+    "ultralytics>=8.4.84",
+    "uvicorn>=0.49.0",
+]

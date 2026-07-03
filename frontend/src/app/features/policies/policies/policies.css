@@ -1,0 +1,141 @@
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+table {
+  width: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0;
+}
+
+.view-toggle {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-toggle button {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 6px !important;
+}
+
+/* Cards Grid Layout */
+.policies-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.policy-item-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.policy-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.policy-item-card mat-card-header {
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.policy-card-badge {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.policy-item-card mat-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  font-family: var(--font-heading);
+}
+
+.policy-item-card mat-card-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.policy-item-card mat-card-content {
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.policy-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f9fafb;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.meta-label {
+  color: #6b7280;
+}
+
+.meta-value {
+  font-weight: 600;
+  color: #374151;
+}
+
+.meta-value.premium {
+  color: #0284c7;
+}
+
+.policy-card-actions {
+  padding: 8px 12px 12px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+/* Status Badges */
+.status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.status.active { background: #d1fae5; color: #065f46; }
+.status.inactive { background: #fee2e2; color: #991b1b; }
+.status.pending { background: #fef3c7; color: #b45309; }
+.status.lapsed { background: #f3f4f6; color: #374151; }

@@ -1,0 +1,71 @@
+export const API = {
+  BASE_URL: 'http://localhost:8000',
+  API_V1: '/api/v1',
+
+  AUTH: {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    PROFILE: '/auth/me',
+  },
+
+  USERS: '/users',
+
+
+  UPLOAD: {
+    IMAGE: '/upload/image',
+    DOCUMENT: '/upload/document',
+  },
+
+  AI: {
+    ANALYZE: '/ai/analyze',
+    REPORT: '/ai/report',
+    MY_REPORTS: '/ai/reports/my',
+    ALL_REPORTS: '/ai/reports',
+  },
+
+
+  DASHBOARD: {
+    SUMMARY: '/dashboard/summary',
+  },
+
+  CLAIMS: {
+    LIST: '/claims',
+    MY: '/claims/my',
+    DETAILS: '/claims',
+    CREATE: '/claims',
+    UPDATE: '/claims',
+    DELETE: '/claims',
+  },
+
+  POLICIES: {
+
+  LIST: '/policies',
+
+  MY: '/policies/my',
+
+  DETAILS: '/policies',
+
+  CREATE: '/policies',
+
+  UPDATE: '/policies',
+
+  DELETE: '/policies',
+
+},
+PLANS: {
+
+  LIST: '/plans',
+
+  DETAILS: '/plans',
+
+  CREATE: '/plans',
+
+  UPDATE: '/plans',
+
+  DELETE: '/plans',
+
+},
+
+
+
+};

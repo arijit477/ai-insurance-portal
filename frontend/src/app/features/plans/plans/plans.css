@@ -1,0 +1,169 @@
+/* ─── Page Layout ─────────────────────────────────────────── */
+.plans-page {
+  padding: 32px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── Header ──────────────────────────────────────────────── */
+.page-header {
+  margin-bottom: 40px;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #1a1a2e;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ─── Loading ─────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 100px;
+  color: #6b7280;
+}
+
+/* ─── Empty State ─────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 80px;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+}
+
+.empty-state h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #374151;
+}
+
+/* ─── Grid ────────────────────────────────────────────────── */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+}
+
+/* ─── Plan Card ───────────────────────────────────────────── */
+.plan-card {
+  position: relative;
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.plan-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+.plan-card.inactive {
+  opacity: 0.65;
+}
+
+/* ─── Category Badge ──────────────────────────────────────── */
+.card-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-health    { background: #d1fae5; color: #065f46; }
+.badge-vehicle   { background: #dbeafe; color: #1e40af; }
+.badge-home      { background: #fef3c7; color: #92400e; }
+.badge-travel    { background: #ede9fe; color: #5b21b6; }
+.badge-life      { background: #fce7f3; color: #9d174d; }
+
+/* ─── Status tag ──────────────────────────────────────────── */
+.status-tag span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.status-tag .active   { background: #d1fae5; color: #065f46; }
+.status-tag .inactive { background: #fee2e2; color: #991b1b; }
+
+/* ─── Description ─────────────────────────────────────────── */
+.description {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 12px 0 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Stats ───────────────────────────────────────────────── */
+.plan-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 8px;
+  border-right: 1px solid #f3f4f6;
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-value.premium { color: #4f46e5; }
+
+/* ─── Action Button ───────────────────────────────────────── */
+mat-card-actions {
+  padding: 16px !important;
+}
+
+.view-btn {
+  width: 100%;
+  border-radius: 10px !important;
+  font-weight: 600;
+}

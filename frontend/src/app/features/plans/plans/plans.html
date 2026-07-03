@@ -1,0 +1,77 @@
+<div class="plans-page">
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Insurance Plans</h1>
+      <p class="subtitle">Choose the coverage that fits your life</p>
+    </div>
+  </div>
+
+  @if(loading) {
+    <div class="loading">
+      <mat-spinner diameter="56"></mat-spinner>
+      <p>Loading plans…</p>
+    </div>
+  }
+
+  @else if (plans.length === 0) {
+    <div class="empty-state">
+      <mat-icon>search_off</mat-icon>
+      <h3>No Plans Available</h3>
+      <p>Check back later for available insurance plans.</p>
+    </div>
+  }
+
+  @else {
+    <div class="plans-grid">
+      @for (plan of plans; track plan.id) {
+        <mat-card class="plan-card" [class.inactive]="!plan.is_active">
+
+          <div class="card-badge" [class]="'badge-' + plan.category.toLowerCase()">
+            {{ plan.category }}
+          </div>
+
+          <mat-card-header>
+            <mat-card-title>{{ plan.plan_name }}</mat-card-title>
+            <mat-card-subtitle class="status-tag">
+              <span [class]="plan.is_active ? 'active' : 'inactive'">
+                {{ plan.is_active ? 'Available' : 'Unavailable' }}
+              </span>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="description">{{ plan.description }}</p>
+
+            <div class="plan-stats">
+              <div class="stat">
+                <span class="stat-label">Coverage</span>
+                <span class="stat-value">₹ {{ plan.coverage_amount | number }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Premium / yr</span>
+                <span class="stat-value premium">₹ {{ plan.premium | number }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Duration</span>
+                <span class="stat-value">{{ plan.duration_months }} mo</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button
+              mat-raised-button
+              color="primary"
+              class="view-btn"
+              (click)="viewPlan(plan.id)">
+              View Details
+            </button>
+          </mat-card-actions>
+
+        </mat-card>
+      }
+    </div>
+  }
+
+</div>

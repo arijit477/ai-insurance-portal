@@ -1,0 +1,20 @@
+<mat-toolbar class="portal-navbar">
+  <div class="brand">
+    <mat-icon class="logo-icon">shield</mat-icon>
+    <span class="logo-text">AuraGuard AI</span>
+  </div>
+
+  <span class="spacer"></span>
+
+  @if (userName) {
+    <div class="user-profile">
+      <mat-icon class="user-icon">account_circle</mat-icon>
+      <span class="user-name">{{ userName }}</span>
+    </div>
+  }
+
+  <button mat-button class="logout-btn" (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-toolbar>

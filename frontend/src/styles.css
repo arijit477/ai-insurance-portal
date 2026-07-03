@@ -1,0 +1,122 @@
+:root {
+  --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --warn-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-body) !important;
+  background: #f9fafb;
+}
+
+h1, h2, h3, h4, h5, h6,
+.logo-text,
+mat-card-title,
+.mat-mdc-card-title,
+.mat-h1, .mat-h2, .mat-h3 {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Colorful page headers with linear gradients */
+.page-header h2,
+.dashboard h2,
+.plans h2,
+.policies h2,
+.claims h2 {
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.35 !important;
+  padding: 4px 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Enhance Material cards to look modern and rounded */
+mat-card,
+.mat-mdc-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(229, 231, 235, 0.6) !important;
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.04) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Material table headers styling */
+.mat-mdc-header-cell {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: #374151 !important;
+  font-size: 0.9rem !important;
+  background: #f3f4f6 !important;
+}
+
+/* Global Button Enhancements */
+.mdc-button,
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button {
+  font-family: var(--font-heading) !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 0 20px !important;
+  height: 40px !important;
+  letter-spacing: 0.02em !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Primary Button Styling */
+button[color="primary"],
+.mat-mdc-raised-button[color="primary"],
+.mat-mdc-unelevated-button[color="primary"] {
+  background: var(--primary-gradient) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.22) !important;
+}
+
+button[color="primary"]:hover,
+.mat-mdc-raised-button[color="primary"]:hover,
+.mat-mdc-unelevated-button[color="primary"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35) !important;
+}
+
+/* Warn/Danger Button Styling */
+button[color="warn"],
+.mat-mdc-raised-button[color="warn"],
+.mat-mdc-unelevated-button[color="warn"] {
+  background: var(--danger-gradient) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22) !important;
+}
+
+button[color="warn"]:hover,
+.mat-mdc-raised-button[color="warn"]:hover,
+.mat-mdc-unelevated-button[color="warn"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Outlined/Stroked Button Styling */
+.mat-mdc-outlined-button,
+button.mat-mdc-outlined-button {
+  border: 1.5px solid rgba(79, 70, 229, 0.4) !important;
+  color: #4f46e5 !important;
+  background: transparent !important;
+}
+
+.mat-mdc-outlined-button:hover,
+button.mat-mdc-outlined-button:hover {
+  background: rgba(79, 70, 229, 0.05) !important;
+  border-color: #4f46e5 !important;
+}

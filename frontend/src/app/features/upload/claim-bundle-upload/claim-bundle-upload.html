@@ -1,0 +1,57 @@
+<h3>Upload Documents & Damage Images</h3>
+
+<div class="grid">
+  <section class="card">
+    <h4>Supporting Document</h4>
+
+    <input
+      type="file"
+      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+      (change)="onDocumentSelected($event)"
+    />
+
+    @if(selectedDocumentFile){
+      <p class="selected">
+        Selected document: <strong>{{ selectedDocumentFile.name }}</strong>
+      </p>
+    }
+  </section>
+
+  <section class="card">
+    <h4>Vehicle Damage Image</h4>
+
+    <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+
+    @if(preview){
+      <img [src]="preview" class="preview" />
+    }
+
+    @if(selectedImageFile){
+      <p class="selected">
+        Selected image: <strong>{{ selectedImageFile.name }}</strong>
+      </p>
+    }
+  </section>
+</div>
+
+<div class="actions">
+  <button
+    mat-raised-button
+    type="button"
+    color="primary"
+    (click)="uploadBundle()"
+    [disabled]="uploading || (!selectedDocumentFile && !selectedImageFile)"
+  >
+    @if(uploading){ Uploading... } @else { Upload All }
+  </button>
+
+  @if(uploaded){
+    <div class="success-animation">
+      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+      </svg>
+      <p class="success">Uploads completed successfully!</p>
+    </div>
+  }
+</div>

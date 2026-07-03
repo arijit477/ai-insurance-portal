@@ -1,0 +1,94 @@
+<div class="register-container">
+
+  <mat-card>
+
+    <h2>Create Account</h2>
+    <p class="subtitle">Join AuraGuard AI Portal</p>
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="register()">
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>Full Name</mat-label>
+
+        <input
+          matInput
+          formControlName="full_name">
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>Email</mat-label>
+
+        <input
+          matInput
+          type="email"
+          formControlName="email">
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>Password</mat-label>
+
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password">
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="loading">
+
+        {{ loading ? 'Registering...' : 'Register' }}
+
+      </button>
+
+    </form>
+
+    @if(success){
+
+      <p class="success">
+        {{ success }}
+      </p>
+
+    }
+
+    @if(error){
+
+      <p class="error">
+        {{ error }}
+      </p>
+
+    }
+
+    <p class="login-link">
+
+      Already have an account?
+
+      <a routerLink="/login">
+        Login
+      </a>
+
+    </p>
+
+  </mat-card>
+
+</div>

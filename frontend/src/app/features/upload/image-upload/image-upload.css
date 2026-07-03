@@ -1,0 +1,19 @@
+.preview{
+
+    margin-top:20px;
+
+    width:100%;
+
+    max-width:500px;
+
+    border-radius:8px;
+
+    border:1px solid #ddd;
+
+}
+
+button{
+
+    margin-top:20px;
+
+}

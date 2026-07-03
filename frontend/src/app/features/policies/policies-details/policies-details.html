@@ -1,0 +1,103 @@
+@if(loading) {
+  <div class="loading">
+    <mat-spinner diameter="56"></mat-spinner>
+    <p>Loading policy details…</p>
+  </div>
+}
+
+@else {
+  <div class="details-page">
+
+    <div class="back-nav">
+      <a mat-button routerLink="/policies">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Policies
+      </a>
+    </div>
+
+    <mat-card class="policy-card">
+      <mat-card-header>
+        <div class="header-main">
+          <div class="policy-num">Policy #{{ policy.policy_number }}</div>
+          <span class="status-chip" [class]="policy.status.toLowerCase()">
+            {{ policy.status }}
+          </span>
+        </div>
+        <mat-card-title>{{ policy.plan_name }}</mat-card-title>
+        <mat-card-subtitle>{{ policy.category }} Insurance</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-divider></mat-divider>
+
+      <mat-card-content>
+        <div class="details-section">
+          <h3>Coverage & Premium Details</h3>
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Coverage Amount</span>
+              <span class="value amount">₹ {{ policy.coverage_amount | number }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Premium Paid</span>
+              <span class="value">₹ {{ policy.premium_paid | number }}</span>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="details-section">
+          <h3>Policy Duration</h3>
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Start Date</span>
+              <span class="value">{{ policy.start_date | date:'longDate' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">End Date</span>
+              <span class="value">{{ policy.end_date | date:'longDate' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="details-section">
+          <h3>Customer Information</h3>
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Insured Name</span>
+              <span class="value">{{ policy.customer_name }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Email Address</span>
+              <span class="value">{{ policy.customer_email }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-divider></mat-divider>
+
+      <mat-card-actions class="card-actions">
+        <button
+          mat-button
+          color="warn"
+          [disabled]="cancelling || policy.status === 'Cancelled'"
+          (click)="cancelPolicy()">
+          @if(cancelling) {
+            <mat-spinner diameter="20" color="warn"></mat-spinner>
+          } @else {
+            Cancel Policy
+          }
+        </button>
+        <span class="spacer"></span>
+        <button mat-raised-button color="primary" routerLink="/claims/create">
+          <mat-icon>add</mat-icon>
+          File a Claim
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+  </div>
+}

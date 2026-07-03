@@ -1,0 +1,304 @@
+.ai-report-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+}
+
+.back-btn {
+  border-radius: 8px !important;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 80px;
+  color: #6b7280;
+}
+
+.error-card {
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  padding: 32px !important;
+}
+
+.error-card mat-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.error-card mat-card-title {
+  margin-top: 12px !important;
+  font-weight: 700;
+}
+
+.error-card button {
+  margin-top: 16px;
+  width: 100%;
+}
+
+/* Grid Layout */
+.report-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+mat-card {
+  margin-bottom: 24px;
+  border-radius: 16px !important;
+  border: 1px solid rgba(229, 231, 235, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+  padding: 24px !important;
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 12px !important;
+  margin-bottom: 16px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-top: 0 !important;
+}
+
+mat-card-header mat-icon {
+  color: #4f46e5;
+}
+
+mat-card-title {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+/* Summary Card */
+.summary-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #374151;
+  white-space: pre-line;
+}
+
+/* Vision Card */
+.damage-metrics {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  background: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric .label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.metric .value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.severity-high {
+  color: #b45309 !important;
+}
+
+.damage-desc {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.no-data {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.damages-list-container {
+  margin-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
+}
+
+.damages-title {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.damages-list {
+  padding: 0;
+  margin: 0 0 16px 0;
+  list-style: none;
+}
+
+.damage-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+}
+
+.damage-class {
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.damage-details {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.damage-cost {
+  font-weight: 700;
+  color: #059669;
+}
+
+.total-repair-cost {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #065f46;
+}
+
+
+/* OCR Card */
+.ocr-text-container {
+  background: #111827;
+  color: #10b981;
+  padding: 16px;
+  border-radius: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #1f2937;
+}
+
+.ocr-text-container pre {
+  margin: 0;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+/* Fraud Card */
+.fraud-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-value {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-value.risk-high { color: #ef4444; }
+.score-value.risk-med { color: #f59e0b; }
+.score-value.risk-low { color: #10b981; }
+
+.gauge-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.fraud-notes {
+  width: 100%;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
+}
+
+.fraud-notes p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.notes-text {
+  color: #4b5563;
+  line-height: 1.5;
+  margin-top: 4px !important;
+}
+
+/* Audit Card */
+.audit-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f9fafb;
+  font-size: 0.85rem;
+}
+
+.audit-row:last-child {
+  border-bottom: none;
+}
+
+.audit-row .label {
+  color: #6b7280;
+}
+
+.audit-row .value {
+  font-weight: 600;
+  color: #111827;
+}
+
+.font-mono {
+  font-family: monospace;
+}
+
+@media (max-width: 900px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}

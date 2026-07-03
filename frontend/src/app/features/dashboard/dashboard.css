@@ -1,0 +1,87 @@
+.dashboard{
+
+    padding:20px;
+
+}
+
+.welcome{
+
+    color:#666;
+
+    margin-bottom:30px;
+
+}
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+}
+
+.card{
+
+    padding:20px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.card mat-icon{
+
+    font-size:40px;
+
+    width:40px;
+
+    height:40px;
+
+    color:#1976d2;
+
+}
+
+.card h3{
+
+    margin-top:15px;
+
+    color:#666;
+
+}
+
+.card h1{
+
+    font-size:36px;
+
+    margin-top:10px;
+
+}
+
+.section-title{
+
+    margin-top:40px;
+
+}
+
+.actions{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:15px;
+
+    margin-top:20px;
+
+}

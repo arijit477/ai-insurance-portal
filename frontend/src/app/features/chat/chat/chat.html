@@ -1,0 +1,124 @@
+<!-- Floating Chat Button -->
+<button class="floating-button" (click)="toggle()" [class.active]="opened()" aria-label="Toggle chat">
+  <span class="fab-icon">{{ opened() ? '✕' : '💬' }}</span>
+  @if (!opened()) {
+    <span class="fab-pulse"></span>
+  }
+</button>
+
+<!-- Chat Window — always in DOM, shown/hidden via CSS so state is preserved -->
+<div class="chat-window" [class.chat-window--open]="opened()" [attr.aria-hidden]="!opened()">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="avatar">
+      <mat-icon>smart_toy</mat-icon>
+    </div>
+    <div class="chat-title">
+      <strong>AuraGuard AI</strong>
+      <span class="status">
+        <span class="online-dot"></span>
+        @if (loading()) {
+          Thinking…
+        } @else if (isTyping()) {
+          Typing…
+        } @else if (claimId() !== null) {
+          Claim #{{ claimId() }} context
+        } @else {
+          General assistant
+        }
+      </span>
+    </div>
+    @if (claimId() !== null) {
+      <span class="context-badge">Claim #{{ claimId() }}</span>
+    }
+    <button class="close-btn" (click)="toggle()" aria-label="Close chat">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Suggested Questions -->
+  @if (!loading() && !isTyping()) {
+    <div class="suggestions">
+      @for (s of suggestions(); track s) {
+        <button class="chip" (click)="askSuggestion(s)">{{ s }}</button>
+      }
+    </div>
+  }
+
+  <!-- Chat Messages -->
+  <div class="messages" #messagesContainer>
+
+    @for (msg of messages(); track $index) {
+      <div class="message-row" [class.user-row]="msg.sender === 'user'">
+
+        @if (msg.sender === 'assistant') {
+          <div class="msg-avatar ai-avatar">
+            <mat-icon>smart_toy</mat-icon>
+          </div>
+        }
+
+        <div
+          class="message"
+          [class.user]="msg.sender === 'user'"
+          [class.ai]="msg.sender === 'assistant'"
+          [class.streaming]="$index === typingIndex()">
+          <span class="msg-text">{{ msg.text }}</span>
+          @if ($index === typingIndex()) {
+            <span class="cursor-blink">▍</span>
+          }
+          @if ($index !== typingIndex()) {
+            <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+          }
+        </div>
+
+        @if (msg.sender === 'user') {
+          <div class="msg-avatar user-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- Thinking dots while waiting for HTTP response -->
+    @if (loading()) {
+      <div class="message-row">
+        <div class="msg-avatar ai-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="typing">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    <input
+      [ngModel]="message()"
+      (ngModelChange)="message.set($event)"
+      (keyup.enter)="send()"
+      [disabled]="loading() || isTyping()"
+      [placeholder]="loading() ? 'AuraGuard AI is thinking…' : isTyping() ? 'AI is responding…' : 'Ask anything…'"
+      autocomplete="off"
+      id="chat-input" />
+
+    <button
+      class="send-btn"
+      (click)="send()"
+      [disabled]="loading() || isTyping() || !message().trim()"
+      aria-label="Send message">
+      @if (loading() || isTyping()) {
+        <mat-icon class="spin">autorenew</mat-icon>
+      } @else {
+        <mat-icon>send</mat-icon>
+      }
+    </button>
+  </div>
+
+</div>
