@@ -31,42 +31,30 @@ export const API = {
   },
 
   CLAIMS: {
-    LIST: '/claims',
+    LIST: '/claims/',
     MY: '/claims/my',
     DETAILS: '/claims',
-    CREATE: '/claims',
+    CREATE: '/claims/',
     UPDATE: '/claims',
     DELETE: '/claims',
   },
 
   POLICIES: {
+    LIST: '/policies/',
+    MY: '/policies/my',
+    DETAILS: '/policies',
+    CREATE: '/policies/',
+    UPDATE: '/policies',
+    DELETE: '/policies',
+  },
 
-  LIST: '/policies',
-
-  MY: '/policies/my',
-
-  DETAILS: '/policies',
-
-  CREATE: '/policies',
-
-  UPDATE: '/policies',
-
-  DELETE: '/policies',
-
-},
-PLANS: {
-
-  LIST: '/plans',
-
-  DETAILS: '/plans',
-
-  CREATE: '/plans',
-
-  UPDATE: '/plans',
-
-  DELETE: '/plans',
-
-},
+  PLANS: {
+    LIST: '/plans/',
+    DETAILS: '/plans',
+    CREATE: '/plans/',
+    UPDATE: '/plans',
+    DELETE: '/plans',
+  },
 
 
 
