@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import numpy as np
-from paddleocr import PaddleOCR
 from PIL import Image
+
+from app.core.config import settings
 
 # PyMuPDF is provided by the `fitz` module. However, the project currently has an
 # unrelated `fitz` package installed (which breaks imports by trying to import
@@ -31,9 +32,13 @@ class OCRService:
 
     def __init__(self):
         self.ocr = None
+        if settings.DISABLE_HEAVY_MODELS:
+            return
+
         try:
             # PaddleOCR requires PaddlePaddle. If it's missing, initialization
             # will raise (e.g. RuntimeError: Engine 'paddle_static' is unavailable...).
+            from paddleocr import PaddleOCR
             self.ocr = PaddleOCR(
                 use_angle_cls=True,
                 lang="en",

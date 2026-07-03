@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     # AI Configuration
     # ==================================================
 
+    DISABLE_HEAVY_MODELS: bool = False
+
     OPENAI_API_KEY: str = Field(...)
 
     OPENAI_MODEL: str = "gpt-5.5"
