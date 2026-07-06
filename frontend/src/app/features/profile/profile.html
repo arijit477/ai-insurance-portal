@@ -1,0 +1,141 @@
+<div class="profile-container">
+  <div class="page-header">
+    <h2>My Profile</h2>
+  </div>
+
+  @if (loadingProfile) {
+    <div class="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading profile details...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error</mat-icon>
+      <p class="error-text">{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadProfile()">Retry</button>
+    </div>
+  } @else {
+    <div class="profile-layout">
+      <!-- Read-only Details Sidebar -->
+      <mat-card class="details-card">
+        <mat-card-header>
+          <div class="avatar-large">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <mat-card-title>{{ user?.full_name }}</mat-card-title>
+          <mat-card-subtitle class="role-badge">{{ user?.role }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="info-content">
+          <div class="info-item">
+            <span class="info-label">Email Address</span>
+            <span class="info-value">{{ user?.email }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Account Status</span>
+            <span class="info-value status-active">
+              <span class="status-dot"></span>
+              Active
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Member Since</span>
+            <span class="info-value">{{ user?.created_at | date: 'dd MMM yyyy' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Edit Form Card -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>Edit Details</mat-card-title>
+          <mat-card-subtitle>Keep your profile details up-to-date.</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="save()">
+            
+            <div class="form-section">
+              <h3>General Information</h3>
+              <mat-form-field appearance="outline">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="full_name" placeholder="John Doe">
+                <mat-icon matSuffix>person</mat-icon>
+                @if (profileForm.get('full_name')?.hasError('required')) {
+                  <mat-error>Name is required.</mat-error>
+                }
+                @if (profileForm.get('full_name')?.hasError('minlength')) {
+                  <mat-error>Name must be at least 3 characters long.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-section">
+              <h3>Change Password</h3>
+              <p class="section-desc">Leave blank if you do not wish to change your password.</p>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>New Password</mat-label>
+                <input 
+                  matInput 
+                  [type]="hidePassword ? 'password' : 'text'" 
+                  formControlName="password" 
+                  placeholder="At least 8 characters">
+                <button 
+                  mat-icon-button 
+                  matSuffix 
+                  type="button" 
+                  (click)="hidePassword = !hidePassword"
+                  [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="hidePassword">
+                  <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                @if (profileForm.get('password')?.hasError('minlength')) {
+                  <mat-error>Password must be at least 8 characters long.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Confirm New Password</mat-label>
+                <input 
+                  matInput 
+                  [type]="hideConfirmPassword ? 'password' : 'text'" 
+                  formControlName="confirm_password" 
+                  placeholder="Re-enter new password">
+                <button 
+                  mat-icon-button 
+                  matSuffix 
+                  type="button" 
+                  (click)="hideConfirmPassword = !hideConfirmPassword"
+                  [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="hideConfirmPassword">
+                  <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit" 
+                [disabled]="profileForm.invalid || saving">
+                @if (saving) {
+                  <span class="spinner-container">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    Saving...
+                  </span>
+                } @else {
+                  Save Changes
+                }
+              </button>
+            </div>
+
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

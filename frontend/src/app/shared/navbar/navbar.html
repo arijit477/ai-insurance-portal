@@ -7,10 +7,10 @@
   <span class="spacer"></span>
 
   @if (userName) {
-    <div class="user-profile">
+    <a class="user-profile" routerLink="/profile">
       <mat-icon class="user-icon">account_circle</mat-icon>
       <span class="user-name">{{ userName }}</span>
-    </div>
+    </a>
   }
 
   <button mat-button class="logout-btn" (click)="logout()">

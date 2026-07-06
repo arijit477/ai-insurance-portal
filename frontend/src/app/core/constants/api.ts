@@ -7,7 +7,7 @@ export const API = {
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
-    PROFILE: '/auth/me',
+    PROFILE: '/users/me',
   },
 
   USERS: '/users',

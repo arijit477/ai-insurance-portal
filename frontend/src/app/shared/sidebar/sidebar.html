@@ -25,6 +25,10 @@
     <span matListItemTitle class="nav-text">AI Reports</span>
   </a>
 
+  <a mat-list-item routerLink="/profile" routerLinkActive="active-link" class="nav-item">
+    <mat-icon matListItemIcon>person</mat-icon>
+    <span matListItemTitle class="nav-text">My Profile</span>
+  </a>
 
   @if (isAdminOrAgent) {
     <a mat-list-item routerLink="/admin" routerLinkActive="active-link" class="nav-item">

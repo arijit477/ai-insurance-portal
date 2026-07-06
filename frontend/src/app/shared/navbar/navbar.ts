@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,

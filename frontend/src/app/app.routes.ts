@@ -11,6 +11,7 @@ import { ClaimsComponent } from './features/claims/claims/claims';
 import { AiReport } from './features/ai-report/ai-report';
 import { AiReportsList } from './features/ai-report/ai-reports-list/ai-reports-list';
 import { Admin } from './features/admin/admin';
+import { ProfileComponent } from './features/profile/profile';
 import { NotFound } from './shared/not-found/not-found';
 import { authGuard } from './core/interceptors/auth.guard';
 import { CreateClaimComponent } from './features/claims/create-claim/create-claim';
@@ -88,6 +89,10 @@ export const routes: Routes = [
       {
         path: 'admin',
         component: Admin,
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent,
       },
     ]
   },

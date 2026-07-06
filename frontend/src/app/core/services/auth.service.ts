@@ -52,6 +52,17 @@ export class AuthService {
 
   }
 
+  updateProfile(
+    request: { full_name?: string; password?: string }
+  ): Observable<User> {
+
+    return this.http.put<User>(
+      `${this.baseUrl}${API.AUTH.PROFILE}`,
+      request,
+    );
+
+  }
+
   saveToken(
     token: string,
   ): void {

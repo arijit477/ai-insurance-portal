@@ -50,6 +50,17 @@
   padding: 6px 12px;
   background: #f3f4f6;
   border-radius: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.user-profile:hover {
+  background: #e5e7eb;
+}
+
+.user-profile:active {
+  transform: scale(0.98);
 }
 
 .user-icon {
