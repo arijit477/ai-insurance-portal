@@ -61,7 +61,7 @@ export class RegisterComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(8),
       ],
     ],
   });

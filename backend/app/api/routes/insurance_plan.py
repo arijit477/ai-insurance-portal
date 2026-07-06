@@ -19,6 +19,20 @@ router = APIRouter(
     prefix="/plans",
     tags=["Insurance Plans"],
 )
+@router.post("/seed-db")
+def manual_seed(db: Session = Depends(get_db)):
+    from app.database.seed import seed_db
+    try:
+        seed_db(db)
+        return {"status": "success", "message": "Seeded successfully"}
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "message": str(e),
+            "traceback": traceback.format_exc()
+        }
+
 
 
 @router.post(

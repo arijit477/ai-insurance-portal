@@ -69,7 +69,7 @@ export class Admin implements OnInit {
   agentForm = this.fb.group({
     full_name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   ngOnInit(): void {
