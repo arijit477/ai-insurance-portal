@@ -18,10 +18,20 @@
   </mat-form-field>
 
   <div class="view-toggle">
-    <button mat-icon-button [color]="viewMode === 'table' ? 'primary' : ''" (click)="viewMode = 'table'" matTooltip="Table View">
+    <button
+      mat-icon-button
+      [color]="viewMode === 'table' ? 'primary' : ''"
+      (click)="viewMode = 'table'"
+      matTooltip="Table View"
+    >
       <mat-icon>view_list</mat-icon>
     </button>
-    <button mat-icon-button [color]="viewMode === 'cards' ? 'primary' : ''" (click)="viewMode = 'cards'" matTooltip="Card Grid View">
+    <button
+      mat-icon-button
+      [color]="viewMode === 'cards' ? 'primary' : ''"
+      (click)="viewMode = 'cards'"
+      matTooltip="Card Grid View"
+    >
       <mat-icon>grid_view</mat-icon>
     </button>
   </div>
@@ -41,7 +51,8 @@
       <p>Create your first insurance claim.</p>
 
       <button mat-raised-button color="primary" routerLink="/claims/create">
-        <mat-icon>add</mat-icon>
+        <mat-icon aria-label="add">add</mat-icon>
+
         Create Claim
       </button>
     </div>
@@ -87,13 +98,31 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let claim">
-              <button mat-icon-button color="primary" class="action-btn" matTooltip="View" (click)="viewClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="primary"
+                class="action-btn"
+                matTooltip="View"
+                (click)="viewClaim(claim.id)"
+              >
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button mat-icon-button color="accent" class="action-btn" matTooltip="Edit" (click)="editClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="accent"
+                class="action-btn"
+                matTooltip="Edit"
+                (click)="editClaim(claim.id)"
+              >
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button color="warn" class="action-btn" matTooltip="Delete" (click)="deleteClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="warn"
+                class="action-btn"
+                matTooltip="Delete"
+                (click)="deleteClaim(claim.id)"
+              >
                 <mat-icon>delete</mat-icon>
               </button>
             </td>
@@ -103,14 +132,20 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
-      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons></mat-paginator>
+      <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        showFirstLastButtons
+      ></mat-paginator>
     } @else {
       <div class="claims-cards-grid">
         @for (claim of dataSource.filteredData; track claim.id) {
           <mat-card class="claim-item-card">
             <mat-card-header>
               <div class="claim-card-badge">
-                <span class="status" [ngClass]="getStatusClass(claim.status)">{{ claim.status }}</span>
+                <span class="status" [ngClass]="getStatusClass(claim.status)">{{
+                  claim.status
+                }}</span>
               </div>
               <mat-card-title>{{ claim.title }}</mat-card-title>
               <mat-card-subtitle>Claim No: {{ claim.claim_number }}</mat-card-subtitle>
@@ -129,13 +164,31 @@
               </div>
             </mat-card-content>
             <mat-card-actions class="claim-card-actions">
-              <button mat-icon-button color="primary" class="action-btn" matTooltip="View" (click)="viewClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="primary"
+                class="action-btn"
+                matTooltip="View"
+                (click)="viewClaim(claim.id)"
+              >
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button mat-icon-button color="accent" class="action-btn" matTooltip="Edit" (click)="editClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="accent"
+                class="action-btn"
+                matTooltip="Edit"
+                (click)="editClaim(claim.id)"
+              >
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button color="warn" class="action-btn" matTooltip="Delete" (click)="deleteClaim(claim.id)">
+              <button
+                mat-icon-button
+                color="warn"
+                class="action-btn"
+                matTooltip="Delete"
+                (click)="deleteClaim(claim.id)"
+              >
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-actions>

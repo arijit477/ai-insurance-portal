@@ -10,6 +10,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -31,6 +32,7 @@ import { ChatMessage } from '../../../core/models/chat';
 export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   private chatService = inject(ChatService);
   private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
 
   opened = signal(false);
   loading = signal(false);
@@ -198,6 +200,62 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     };
 
     type();
+  }
+
+  formatMessage(text: string): SafeHtml {
+    if (!text) return '';
+    
+    // Escaping HTML characters first to prevent XSS
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Code blocks: ```code``` -> <pre><code>$1</code></pre>
+    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+    // Inline code: `code` -> <code>$1</code>
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Bold text: **text** -> <strong>$1</strong>
+    html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
+    // Bullet points:
+    // Any line starting with "* " or "- " or "• " -> formatted as list item
+    const lines = html.split('\n');
+    let inList = false;
+    const formattedLines = lines.map(line => {
+      const match = line.match(/^(\s*)([*•-]\s+)(.+)$/);
+      if (match) {
+        let prefix = '';
+        if (!inList) {
+          inList = true;
+          prefix = '<ul class="chat-list">';
+        }
+        return prefix + `<li>${match[3]}</li>`;
+      } else {
+        let prefix = '';
+        if (inList) {
+          inList = false;
+          prefix = '</ul>';
+        }
+        return prefix + line;
+      }
+    });
+    if (inList) {
+      formattedLines.push('</ul>');
+    }
+    html = formattedLines.join('\n');
+
+    // Convert newlines to <br/>
+    html = html.replace(/\n/g, '<br/>');
+
+    // Clean up empty double <br/> around list tags
+    html = html.replace(/<\/ul><br\/>/g, '</ul>');
+    html = html.replace(/<ul class="chat-list"><br\/>/g, '<ul class="chat-list">');
+    html = html.replace(/<\/li><br\/>/g, '</li>');
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   askSuggestion(question: string): void {

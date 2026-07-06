@@ -71,6 +71,37 @@ mat-card,
   height: 40px !important;
   letter-spacing: 0.02em !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Fix vertical centering of label inside buttons */
+.mat-mdc-button .mdc-button__label,
+.mat-mdc-raised-button .mdc-button__label,
+.mat-mdc-unelevated-button .mdc-button__label,
+.mat-mdc-outlined-button .mdc-button__label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  height: 100% !important;
+}
+
+/* Fix icon alignment inside Material buttons */
+.mat-mdc-button mat-icon,
+.mat-mdc-raised-button mat-icon,
+.mat-mdc-unelevated-button mat-icon,
+.mat-mdc-outlined-button mat-icon {
+  margin-right: 8px !important;
+  margin-left: -4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
 }
 
 /* Primary Button Styling */

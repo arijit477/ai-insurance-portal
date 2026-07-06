@@ -63,7 +63,7 @@
           [class.user]="msg.sender === 'user'"
           [class.ai]="msg.sender === 'assistant'"
           [class.streaming]="$index === typingIndex()">
-          <span class="msg-text">{{ msg.text }}</span>
+          <span class="msg-text" [innerHTML]="formatMessage(msg.text)"></span>
           @if ($index === typingIndex()) {
             <span class="cursor-blink">▍</span>
           }

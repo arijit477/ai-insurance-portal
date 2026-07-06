@@ -673,3 +673,39 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* Markdown Formatting inside Chat Bubbles */
+.msg-text ul.chat-list {
+  margin: 4px 0 !important;
+  padding-left: 20px !important;
+  list-style-type: disc !important;
+}
+
+.msg-text ul.chat-list li {
+  margin-bottom: 4px !important;
+  display: list-item !important;
+}
+
+.msg-text strong {
+  font-weight: 700 !important;
+}
+
+.msg-text code {
+  background: rgba(0, 0, 0, 0.06) !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  font-family: Consolas, Monaco, monospace !important;
+  font-size: 0.9em !important;
+  color: #1e3a8a !important;
+}
+
+.msg-text pre {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  padding: 10px !important;
+  border-radius: 6px !important;
+  font-family: Consolas, Monaco, monospace !important;
+  font-size: 0.85em !important;
+  overflow-x: auto !important;
+  margin: 8px 0 !important;
+}
