@@ -81,23 +81,42 @@ INITIAL_PLANS = [
 
 
 def seed_db(db: Session):
-    existing = db.query(InsurancePlan).first()
-    if existing is not None:
+    existing_plan = db.query(InsurancePlan).first()
+    if existing_plan is None:
+        logger.info("Seeding initial insurance plans...")
+        for plan_data in INITIAL_PLANS:
+            plan = InsurancePlan(
+                id=plan_data["id"],
+                plan_name=plan_data["plan_name"],
+                category=InsuranceCategory[plan_data["category"]],
+                premium=plan_data["premium"],
+                coverage_amount=plan_data["coverage_amount"],
+                duration_months=plan_data["duration_months"],
+                description=plan_data["description"],
+                is_active=True
+            )
+            db.add(plan)
+        db.commit()
+        logger.info("Seeding insurance plans completed successfully.")
+    else:
         logger.info("Database already seeded with insurance plans.")
-        return
 
-    logger.info("Seeding initial insurance plans...")
-    for plan_data in INITIAL_PLANS:
-        plan = InsurancePlan(
-            id=plan_data["id"],
-            plan_name=plan_data["plan_name"],
-            category=InsuranceCategory[plan_data["category"]],
-            premium=plan_data["premium"],
-            coverage_amount=plan_data["coverage_amount"],
-            duration_months=plan_data["duration_months"],
-            description=plan_data["description"],
+    # Seed Admin User if missing
+    from app.models.user import User, UserRole
+    from app.core.security import hash_password
+
+    admin_user = db.query(User).filter(User.role == UserRole.ADMIN).first()
+    if not admin_user:
+        logger.info("Admin user not found. Seeding default admin user...")
+        admin = User(
+            full_name="System Administrator",
+            email="admin@auraguard.com",
+            hashed_password=hash_password("admin123"),
+            role=UserRole.ADMIN,
             is_active=True
         )
-        db.add(plan)
-    db.commit()
-    logger.info("Seeding completed successfully!")
+        db.add(admin)
+        db.commit()
+        logger.info("Default admin user seeded successfully!")
+    else:
+        logger.info("Admin user already exists in database.")
