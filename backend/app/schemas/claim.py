@@ -107,6 +107,10 @@ class ClaimResponse(BaseModel):
 
     updated_at: datetime
 
+    rejection_reason: Optional[str] = None
+
+    credit_date: Optional[datetime] = None
+
     documents: List[ClaimDocumentResponse] = []
 
     images: List[ClaimImageResponse] = []
@@ -157,3 +161,15 @@ class ClaimDetailsResponse(BaseModel):
     submitted_at: datetime
 
     updated_at: datetime
+
+    rejection_reason: Optional[str] = None
+
+    credit_date: Optional[datetime] = None
+
+
+class ClaimApproveRequest(BaseModel):
+    credit_date: datetime
+
+
+class ClaimRejectRequest(BaseModel):
+    rejection_reason: str

@@ -18,6 +18,13 @@ export class AdminService {
   }
 
   /**
+   * List all claims with customer and AI details (Admin only)
+   */
+  getClaims(): Observable<any[]> {
+    return this.http.get<any[]>(`${API.BASE_URL}/admin/claims`);
+  }
+
+  /**
    * Create a new Agent account (Admin only)
    */
   createAgent(fullName: string, email: string, password: string): Observable<any> {
@@ -27,5 +34,12 @@ export class AdminService {
       .set('password', password);
 
     return this.http.post<any>(`${API.BASE_URL}/admin/agents`, null, { params });
+  }
+
+  /**
+   * Delete a user account (Admin only)
+   */
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete<any>(`${API.BASE_URL}/admin/users/${userId}`);
   }
 }

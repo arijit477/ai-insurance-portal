@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { MatTabsModule } from '@angular/material/tabs';
@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ClaimService } from '../../core/services/claim.service';
 import { AdminService } from '../../core/services/admin.service';
 import { Claim } from '../../core/models/claim/claim';
+import { API } from '../../core/constants/api';
 
 @Component({
   selector: 'app-admin',
@@ -23,7 +24,7 @@ import { Claim } from '../../core/models/claim/claim';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
+    FormsModule,
     MatTabsModule,
     MatTableModule,
     MatButtonModule,
@@ -47,13 +48,23 @@ export class Admin implements OnInit {
   loadingUsers = true;
   creatingAgent = false;
 
-  claimsDataSource = new MatTableDataSource<Claim>();
+  claimsDataSource = new MatTableDataSource<any>();
   usersDataSource = new MatTableDataSource<any>();
+
+  selectedClaim: any = null;
+  showApproveForm = false;
+  showRejectForm = false;
+  creditDate = '';
+  rejectionReason = '';
+  showDeleteConfirmModal = false;
+  userToDelete: any = null;
 
   claimColumns = [
     'claim_number',
+    'customer',
     'title',
     'claim_amount',
+    'ai_status',
     'status',
     'actions',
   ];
@@ -64,6 +75,7 @@ export class Admin implements OnInit {
     'email',
     'role',
     'status',
+    'actions',
   ];
 
   agentForm = this.fb.group({
@@ -81,10 +93,14 @@ export class Admin implements OnInit {
     this.loadingClaims = true;
     this.cdr.markForCheck();
 
-    this.claimService.getAllClaims().subscribe({
+    this.adminService.getClaims().subscribe({
       next: (response) => {
         this.claimsDataSource.data = response;
         this.loadingClaims = false;
+        if (this.selectedClaim) {
+          const updated = response.find(c => c.id === this.selectedClaim.id);
+          this.selectedClaim = updated || null;
+        }
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -94,6 +110,32 @@ export class Admin implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  selectClaim(claim: any): void {
+    this.selectedClaim = claim;
+    this.showApproveForm = false;
+    this.showRejectForm = false;
+    this.creditDate = '';
+    this.rejectionReason = '';
+    this.cdr.markForCheck();
+  }
+
+  closeDrawer(): void {
+    this.selectedClaim = null;
+    this.showApproveForm = false;
+    this.showRejectForm = false;
+    this.creditDate = '';
+    this.rejectionReason = '';
+    this.cdr.markForCheck();
+  }
+
+  get maxConfidence(): number {
+    if (this.selectedClaim?.ai_report?.damage_analysis?.damages?.length > 0) {
+      const confidences = this.selectedClaim.ai_report.damage_analysis.damages.map((d: any) => d.confidence || 0);
+      return Math.max(...confidences);
+    }
+    return 0;
   }
 
   loadUsers(): void {
@@ -115,10 +157,17 @@ export class Admin implements OnInit {
     });
   }
 
-  approveClaim(id: number): void {
-    this.claimService.approveClaim(id).subscribe({
+  confirmApprove(): void {
+    if (!this.creditDate) {
+      this.snackBar.open('Please select an insurance credit date.', 'Close', { duration: 3000 });
+      return;
+    }
+    const isoDate = new Date(this.creditDate).toISOString();
+    this.claimService.approveClaim(this.selectedClaim.id, { credit_date: isoDate }).subscribe({
       next: () => {
         this.snackBar.open('Claim approved successfully.', 'Close', { duration: 3000 });
+        this.showApproveForm = false;
+        this.creditDate = '';
         this.loadClaims();
       },
       error: (err) => {
@@ -128,10 +177,16 @@ export class Admin implements OnInit {
     });
   }
 
-  rejectClaim(id: number): void {
-    this.claimService.rejectClaim(id).subscribe({
+  confirmReject(): void {
+    if (!this.rejectionReason.trim()) {
+      this.snackBar.open('Please enter a rejection reason.', 'Close', { duration: 3000 });
+      return;
+    }
+    this.claimService.rejectClaim(this.selectedClaim.id, { rejection_reason: this.rejectionReason }).subscribe({
       next: () => {
         this.snackBar.open('Claim rejected successfully.', 'Close', { duration: 3000 });
+        this.showRejectForm = false;
+        this.rejectionReason = '';
         this.loadClaims();
       },
       error: (err) => {
@@ -168,5 +223,43 @@ export class Admin implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  deleteUser(user: any): void {
+    this.userToDelete = user;
+    this.showDeleteConfirmModal = true;
+    this.cdr.markForCheck();
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirmModal = false;
+    this.userToDelete = null;
+    this.cdr.markForCheck();
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) return;
+
+    this.adminService.deleteUser(this.userToDelete.id).subscribe({
+      next: (res) => {
+        this.snackBar.open(res.message || 'User account deleted successfully.', 'Close', { duration: 3000 });
+        this.showDeleteConfirmModal = false;
+        this.userToDelete = null;
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Failed to delete user:', err);
+        this.snackBar.open(err.error?.detail || 'Failed to delete user account.', 'Close', { duration: 3000 });
+        this.showDeleteConfirmModal = false;
+        this.userToDelete = null;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  getFileUrl(filePath: string): string {
+    if (!filePath) return '';
+    const normalized = filePath.replace(/\\/g, '/');
+    return `${API.BASE_URL}/${normalized}`;
   }
 }

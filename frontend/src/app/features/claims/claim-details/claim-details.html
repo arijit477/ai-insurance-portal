@@ -9,9 +9,28 @@
     <mat-card-content>
       <p>
         <strong>Status:</strong>
-
-        {{ claim.status }}
+        <span class="status-badge" [class]="claim.status.toLowerCase().replace(' ', '-')">
+          {{ claim.status }}
+        </span>
       </p>
+
+      @if (claim.status === 'Approved' && claim.credit_date) {
+        <div class="alert-banner approved-banner" style="display: flex; align-items: center; gap: 10px; background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #047857; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem;">
+          <mat-icon style="color: #10b981;">check_circle</mat-icon>
+          <div>
+            Insurance credit is scheduled to be processed on <strong>{{ claim.credit_date | date:'longDate' }}</strong>.
+          </div>
+        </div>
+      }
+
+      @if (claim.status === 'Rejected' && claim.rejection_reason) {
+        <div class="alert-banner rejected-banner" style="display: flex; align-items: center; gap: 10px; background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #b91c1c; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem;">
+          <mat-icon style="color: #ef4444;">cancel</mat-icon>
+          <div>
+            <strong>Rejection Reason:</strong> {{ claim.rejection_reason }}
+          </div>
+        </div>
+      }
 
       <p>
         <strong>Customer:</strong>

@@ -55,7 +55,11 @@ export const API = {
     UPDATE: '/plans',
     DELETE: '/plans',
   },
-
-
+  NOTIFICATIONS: {
+    LIST: '/notifications/',
+    UNREAD_COUNT: '/notifications/unread-count',
+    READ: '/notifications',
+    READ_ALL: '/notifications/read-all',
+  },
 
 };

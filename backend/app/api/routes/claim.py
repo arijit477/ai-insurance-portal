@@ -15,6 +15,8 @@ from app.schemas.claim import (
     ClaimCreate,
     ClaimResponse,
     ClaimUpdate,
+    ClaimApproveRequest,
+    ClaimRejectRequest,
 )
 from app.services.claim_service import ClaimService
 
@@ -150,12 +152,14 @@ def delete_claim(
 )
 def approve_claim(
     claim_id: int,
+    request: ClaimApproveRequest,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
     return ClaimService.approve_claim(
         db,
         claim_id,
+        request.credit_date,
     )
 
 
@@ -168,12 +172,14 @@ def approve_claim(
 )
 def reject_claim(
     claim_id: int,
+    request: ClaimRejectRequest,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
     return ClaimService.reject_claim(
         db,
         claim_id,
+        request.rejection_reason,
     )
 
 

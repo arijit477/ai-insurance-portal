@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { LoginComponent } from './features/auth/login/login';
 import { RegisterComponent } from './features/auth/register/register';
+import { AdminLoginComponent } from './features/auth/admin-login/admin-login';
 
 import { DashboardComponent } from './features/dashboard/dashboard';
 import { PlansComponent } from './features/plans/plans/plans';
@@ -14,6 +15,7 @@ import { Admin } from './features/admin/admin';
 import { ProfileComponent } from './features/profile/profile';
 import { NotFound } from './shared/not-found/not-found';
 import { authGuard } from './core/interceptors/auth.guard';
+import { adminGuard } from './core/interceptors/admin.guard';
 import { CreateClaimComponent } from './features/claims/create-claim/create-claim';
 import { PlanDetailsComponent } from './features/plans/plan-details/plan-details';
 import { ClaimDetails } from './features/claims/claim-details/claim-details';
@@ -35,6 +37,11 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
+  },
+
+  {
+    path: 'admin-login',
+    component: AdminLoginComponent,
   },
 
   {
@@ -89,6 +96,7 @@ export const routes: Routes = [
       {
         path: 'admin',
         component: Admin,
+        canActivate: [adminGuard],
       },
       {
         path: 'profile',

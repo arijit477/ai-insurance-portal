@@ -58,20 +58,20 @@ export class ClaimService {
   /**
    * Approve a claim (Admin only)
    */
-  approveClaim(claimId: number): Observable<Claim> {
+  approveClaim(claimId: number, payload: { credit_date: string }): Observable<Claim> {
     return this.http.put<Claim>(
-      `${API.BASE_URL}${API.CLAIMS.LIST}/${claimId}/approve`,
-      {}
+      `${API.BASE_URL}/claims/${claimId}/approve`,
+      payload
     );
   }
 
   /**
    * Reject a claim (Admin only)
    */
-  rejectClaim(claimId: number): Observable<Claim> {
+  rejectClaim(claimId: number, payload: { rejection_reason: string }): Observable<Claim> {
     return this.http.put<Claim>(
-      `${API.BASE_URL}${API.CLAIMS.LIST}/${claimId}/reject`,
-      {}
+      `${API.BASE_URL}/claims/${claimId}/reject`,
+      payload
     );
   }
 

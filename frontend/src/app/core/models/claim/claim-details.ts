@@ -24,4 +24,8 @@ export interface ClaimDetails {
 
   updated_at: string;
 
+  rejection_reason?: string;
+
+  credit_date?: string;
+
 }

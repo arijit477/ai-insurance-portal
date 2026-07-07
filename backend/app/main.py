@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+import os
+from fastapi.staticfiles import StaticFiles
 
 
 from app.database.db import Base, engine
@@ -12,6 +14,7 @@ from app.api.routes import claim_image
 from app.api.routes import claim_document
 from app.api.routes import upload
 from app.api.routes import ai
+from app.api.routes import notification
 from app.api.routes import dashboard
 from app.api.routes import chat
 
@@ -41,6 +44,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(admin.router)
@@ -51,6 +57,7 @@ app.include_router(claim_image.router)
 app.include_router(claim_document.router)
 app.include_router(upload.router)
 app.include_router(ai.router)
+app.include_router(notification.router)
 app.include_router(
     dashboard.router,
     prefix=settings.API_V1_STR,

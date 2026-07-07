@@ -230,7 +230,9 @@ class ClaimService:
     def approve_claim(
         db: Session,
         claim_id: int,
+        credit_date: datetime,
     ) -> Claim:
+        from app.models.notification import Notification
 
         claim = ClaimService.get_claim_by_id(
             db,
@@ -238,6 +240,17 @@ class ClaimService:
         )
 
         claim.status = ClaimStatus.APPROVED
+        claim.credit_date = credit_date
+        claim.rejection_reason = None
+
+        # Create notification
+        notification = Notification(
+            user_id=claim.customer_id,
+            claim_id=claim.id,
+            title="Claim Approved",
+            message=f"Your claim {claim.claim_number} has been approved. The funds will be credited to your account on {credit_date.strftime('%Y-%m-%d')}."
+        )
+        db.add(notification)
 
         db.commit()
         db.refresh(claim)
@@ -248,7 +261,9 @@ class ClaimService:
     def reject_claim(
         db: Session,
         claim_id: int,
+        rejection_reason: str,
     ) -> Claim:
+        from app.models.notification import Notification
 
         claim = ClaimService.get_claim_by_id(
             db,
@@ -256,6 +271,17 @@ class ClaimService:
         )
 
         claim.status = ClaimStatus.REJECTED
+        claim.rejection_reason = rejection_reason
+        claim.credit_date = None
+
+        # Create notification
+        notification = Notification(
+            user_id=claim.customer_id,
+            claim_id=claim.id,
+            title="Claim Rejected",
+            message=f"Your claim {claim.claim_number} has been rejected. Reason: {rejection_reason}."
+        )
+        db.add(notification)
 
         db.commit()
         db.refresh(claim)

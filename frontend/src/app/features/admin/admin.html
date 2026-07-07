@@ -13,75 +13,364 @@
         Claims Database
       </ng-template>
 
-      <div class="tab-content">
+      <div class="tab-content claims-tab-content">
         @if (loadingClaims) {
           <div class="loading">
             <mat-spinner diameter="48"></mat-spinner>
             <p>Loading claims database…</p>
           </div>
         } @else {
-          <div class="table-container">
-            <table mat-table [dataSource]="claimsDataSource">
-              <!-- Claim Number -->
-              <ng-container matColumnDef="claim_number">
-                <th mat-header-cell *matHeaderCellDef>Claim Number</th>
-                <td mat-cell *matCellDef="let claim">{{ claim.claim_number }}</td>
-              </ng-container>
+          <div class="claims-dashboard-layout" [class.drawer-open]="selectedClaim !== null">
+            <!-- Left Side: Table -->
+            <div class="table-side">
+              <div class="table-container">
+                <table mat-table [dataSource]="claimsDataSource" class="admin-claims-table">
+                  <!-- Claim Number -->
+                  <ng-container matColumnDef="claim_number">
+                    <th mat-header-cell *matHeaderCellDef>Claim Number</th>
+                    <td mat-cell *matCellDef="let claim" class="font-mono claim-num-td">
+                      {{ claim.claim_number }}
+                    </td>
+                  </ng-container>
 
-              <!-- Title -->
-              <ng-container matColumnDef="title">
-                <th mat-header-cell *matHeaderCellDef>Title</th>
-                <td mat-cell *matCellDef="let claim">{{ claim.title }}</td>
-              </ng-container>
+                  <!-- Customer Name -->
+                  <ng-container matColumnDef="customer">
+                    <th mat-header-cell *matHeaderCellDef>Requested By</th>
+                    <td mat-cell *matCellDef="let claim">
+                      <div class="customer-info-cell">
+                        <span class="cust-name">{{ claim.customer_name }}</span>
+                        <span class="cust-email">{{ claim.customer_email }}</span>
+                      </div>
+                    </td>
+                  </ng-container>
 
-              <!-- Amount -->
-              <ng-container matColumnDef="claim_amount">
-                <th mat-header-cell *matHeaderCellDef>Amount</th>
-                <td mat-cell *matCellDef="let claim" class="amount">₹ {{ claim.claim_amount | number }}</td>
-              </ng-container>
+                  <!-- Title -->
+                  <ng-container matColumnDef="title">
+                    <th mat-header-cell *matHeaderCellDef>Title</th>
+                    <td mat-cell *matCellDef="let claim" class="claim-title-td">{{ claim.title }}</td>
+                  </ng-container>
 
-              <!-- Status -->
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let claim">
-                  <span class="status-chip" [class]="claim.status.toLowerCase().replace(' ', '-')">
-                    {{ claim.status }}
-                  </span>
-                </td>
-              </ng-container>
+                  <!-- Amount -->
+                  <ng-container matColumnDef="claim_amount">
+                    <th mat-header-cell *matHeaderCellDef>Amount</th>
+                    <td mat-cell *matCellDef="let claim" class="amount font-semibold text-right">
+                      ₹{{ claim.claim_amount | number }}
+                    </td>
+                  </ng-container>
 
-              <!-- Actions -->
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let claim">
-                  <div class="action-buttons">
-                    <button
-                      mat-stroked-button
-                      color="primary"
-                      [routerLink]="['/claims', claim.id]">
-                      View
-                    </button>
-                    <button
-                      mat-raised-button
-                      color="primary"
-                      [disabled]="claim.status === 'Approved' || claim.status === 'Rejected'"
-                      (click)="approveClaim(claim.id)">
-                      Approve
-                    </button>
-                    <button
-                      mat-raised-button
-                      color="warn"
-                      [disabled]="claim.status === 'Approved' || claim.status === 'Rejected'"
-                      (click)="rejectClaim(claim.id)">
-                      Reject
+                  <!-- AI Verification Status -->
+                  <ng-container matColumnDef="ai_status">
+                    <th mat-header-cell *matHeaderCellDef>AI Assessment</th>
+                    <td mat-cell *matCellDef="let claim">
+                      @if (claim.has_ai_report && claim.ai_report) {
+                        <span class="ai-risk-tag" 
+                          [class.risk-high]="claim.ai_report.fraud_score > 70"
+                          [class.risk-med]="claim.ai_report.fraud_score >= 30 && claim.ai_report.fraud_score <= 70"
+                          [class.risk-low]="claim.ai_report.fraud_score < 30">
+                          <mat-icon class="ai-spark-icon">auto_awesome</mat-icon>
+                          <span>{{ claim.ai_report.fraud_score }}% Risk</span>
+                        </span>
+                      } @else {
+                        <span class="ai-risk-tag risk-none">
+                          <mat-icon class="ai-spark-icon">hourglass_empty</mat-icon>
+                          <span>Pending</span>
+                        </span>
+                      }
+                    </td>
+                  </ng-container>
+
+                  <!-- Status -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let claim">
+                      <span class="status-chip" [class]="claim.status.toLowerCase().replace(' ', '-')">
+                        {{ claim.status }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Actions -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let claim" (click)="$event.stopPropagation()">
+                      <div class="action-buttons">
+                        <button
+                          mat-stroked-button
+                          color="primary"
+                          class="review-btn"
+                          (click)="selectClaim(claim)">
+                          Review
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="claimColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: claimColumns;" 
+                      class="claim-row"
+                      [class.selected-row]="selectedClaim && selectedClaim.id === row.id"
+                      (click)="selectClaim(row)">
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right Side: Details Side Drawer -->
+            @if (selectedClaim) {
+              <div class="drawer-side">
+                <mat-card class="details-drawer-card">
+                  <div class="drawer-header">
+                    <div class="drawer-title-group">
+                      <h3>Claim Verification Audit</h3>
+                      <span class="font-mono text-sm color-muted">{{ selectedClaim.claim_number }}</span>
+                    </div>
+                    <button mat-icon-button (click)="closeDrawer()" class="close-drawer-btn">
+                      <mat-icon>close</mat-icon>
                     </button>
                   </div>
-                </td>
-              </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="claimColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: claimColumns;"></tr>
-            </table>
+                  <div class="drawer-scroll-content">
+                    
+                    <!-- Customer and Policy Section -->
+                    <div class="audit-section">
+                      <h4 class="section-title"><mat-icon>person</mat-icon> Customer & Policy</h4>
+                      <div class="audit-grid-2">
+                        <div class="audit-field">
+                          <span class="label">Customer Name</span>
+                          <span class="value">{{ selectedClaim.customer_name }}</span>
+                        </div>
+                        <div class="audit-field">
+                          <span class="label">Email Address</span>
+                          <span class="value">{{ selectedClaim.customer_email }}</span>
+                        </div>
+                        <div class="audit-field">
+                          <span class="label">Policy Number</span>
+                          <span class="value font-mono">{{ selectedClaim.policy_number }}</span>
+                        </div>
+                        <div class="audit-field">
+                          <span class="label">Claim Amount</span>
+                          <span class="value amount-highlight">₹{{ selectedClaim.claim_amount | number }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Claim Details Section -->
+                    <div class="audit-section">
+                      <h4 class="section-title"><mat-icon>info</mat-icon> Claim Description</h4>
+                      <div class="audit-field full-width">
+                        <span class="label">Title</span>
+                        <span class="value font-semibold">{{ selectedClaim.title }}</span>
+                      </div>
+                      <div class="audit-field full-width margin-top-xs">
+                        <span class="label font-medium">Description</span>
+                        <p class="description-text">{{ selectedClaim.description }}</p>
+                      </div>
+                    </div>
+
+                    <!-- AI Verification Report -->
+                    <div class="audit-section ai-report-section">
+                      <h4 class="section-title ai-title-color">
+                        <mat-icon>auto_awesome</mat-icon> AuraGuard AI Co-Pilot Report
+                      </h4>
+
+                      @if (selectedClaim.has_ai_report && selectedClaim.ai_report) {
+                        
+                        <!-- Fraud Risk Meter -->
+                        <div class="fraud-meter-card"
+                          [class.fraud-high]="selectedClaim.ai_report.fraud_score > 70"
+                          [class.fraud-med]="selectedClaim.ai_report.fraud_score >= 30 && selectedClaim.ai_report.fraud_score <= 70"
+                          [class.fraud-low]="selectedClaim.ai_report.fraud_score < 30">
+                          <div class="meter-header">
+                            <span class="meter-title">Fraud Risk Score</span>
+                            <span class="meter-score">{{ selectedClaim.ai_report.fraud_score }}%</span>
+                          </div>
+                          <div class="meter-bar-container">
+                            <div class="meter-bar" [style.width.%]="selectedClaim.ai_report.fraud_score"></div>
+                          </div>
+                          <p class="meter-reason">
+                            <strong>Reasoning:</strong> {{ selectedClaim.ai_report.fraud_analysis?.reasoning || 'No anomalies found in the documentation.' }}
+                          </p>
+                        </div>
+
+                        <!-- AI Summary -->
+                        <div class="ai-box margin-top-sm">
+                          <span class="ai-box-label">AI Claim Summary</span>
+                          <p class="ai-box-text">{{ selectedClaim.ai_report.claim_summary }}</p>
+                        </div>
+
+                        <!-- Computer Vision Damages -->
+                        @if (selectedClaim.ai_report.damage_analysis) {
+                          <div class="ai-box margin-top-sm">
+                            <span class="ai-box-label">Computer Vision Damage Diagnostics</span>
+                            <div class="damage-summary-row">
+                              <div>Class: <strong>{{ selectedClaim.ai_report.damage_analysis.metadata?.vehicle_type || 'Sedan' }}</strong></div>
+                              <div>Severity: <strong class="severity-tag">{{ selectedClaim.ai_report.damage_analysis.summary?.overall_severity || 'Moderate' }}</strong></div>
+                            </div>
+                            
+                            @if (selectedClaim.ai_report.damage_analysis.damages && selectedClaim.ai_report.damage_analysis.damages.length > 0) {
+                              <div class="damages-table-wrapper">
+                                <table class="damages-mini-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Detected Damage</th>
+                                      <th>Confidence</th>
+                                      <th>Est. Repair Cost</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let damage of selectedClaim.ai_report.damage_analysis.damages">
+                                      <td>💥 {{ damage.class_name }}</td>
+                                      <td>{{ (damage.confidence * 100) | number:'1.0-1' }}%</td>
+                                      <td>₹{{ damage.estimated_cost | number }}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div class="cost-comparison">
+                                <div>Total Estimated Repair Cost: <strong>₹{{ selectedClaim.ai_report.damage_analysis.summary?.estimated_repair_cost | number }}</strong></div>
+                                <div class="claimed-diff" [class.warning]="selectedClaim.claim_amount > (selectedClaim.ai_report.damage_analysis.summary?.estimated_repair_cost || 0)">
+                                  Claim Amount Diff: <strong>₹{{ (selectedClaim.claim_amount - (selectedClaim.ai_report.damage_analysis.summary?.estimated_repair_cost || 0)) | number }}</strong>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        }
+
+                        <!-- OCR Extracted Data -->
+                        @if (selectedClaim.ai_report.ocr_text) {
+                          <div class="ai-box margin-top-sm">
+                            <span class="ai-box-label">OCR Document Verification</span>
+                            <pre class="ocr-preview">{{ selectedClaim.ai_report.ocr_text }}</pre>
+                          </div>
+                        }
+
+                      } @else {
+                        <div class="no-ai-report">
+                          <mat-icon>warning_amber</mat-icon>
+                          <p>No AI analysis report found for this claim. Run analysis from the customer view or wait for automated processing.</p>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Files Section -->
+                    <div class="audit-section">
+                      <h4 class="section-title"><mat-icon>attach_file</mat-icon> Submitted Files</h4>
+                      
+                      @if (selectedClaim.documents?.length || selectedClaim.images?.length) {
+                        <div class="files-preview-list">
+                          <div *ngFor="let doc of selectedClaim.documents" class="file-preview-card">
+                            <div class="card-info-side">
+                              <mat-icon class="file-icon">description</mat-icon>
+                              <div class="file-meta">
+                                <span class="file-name" [title]="doc.file_name">{{ doc.file_name }}</span>
+                                <span class="file-type">{{ doc.document_type }}</span>
+                              </div>
+                            </div>
+                            <div class="file-actions">
+                              <a [href]="getFileUrl(doc.file_path)" target="_blank" class="file-action-btn view-btn" title="View Document">
+                                <mat-icon>visibility</mat-icon>
+                              </a>
+                              <a [href]="getFileUrl(doc.file_path)" download [attr.download]="doc.file_name" class="file-action-btn download-btn" title="Download Document">
+                                <mat-icon>download</mat-icon>
+                              </a>
+                            </div>
+                          </div>
+                          
+                          <div *ngFor="let img of selectedClaim.images" class="file-preview-card">
+                            <div class="card-info-side">
+                              <mat-icon class="file-icon">image</mat-icon>
+                              <div class="file-meta">
+                                <span class="file-name" [title]="img.file_name">{{ img.file_name }}</span>
+                                <span class="file-type">Damage Photo</span>
+                              </div>
+                            </div>
+                            <div class="file-actions">
+                              <a [href]="getFileUrl(img.file_path)" target="_blank" class="file-action-btn view-btn" title="View Image">
+                                <mat-icon>visibility</mat-icon>
+                              </a>
+                              <a [href]="getFileUrl(img.file_path)" download [attr.download]="img.file_name" class="file-action-btn download-btn" title="Download Image">
+                                <mat-icon>download</mat-icon>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      } @else {
+                        <p class="text-sm color-muted">No files uploaded.</p>
+                      }
+                    </div>
+
+                  </div>
+
+                  <!-- Drawer Footer: Verification Actions -->
+                  <div class="drawer-footer">
+                    <div class="audit-status-banner" *ngIf="!showApproveForm && !showRejectForm">
+                      <span>Verification Status:</span>
+                      <span class="status-chip text-sm" [class]="selectedClaim.status.toLowerCase().replace(' ', '-')">
+                        {{ selectedClaim.status }}
+                      </span>
+                    </div>
+
+                    <!-- Approve Inline Form -->
+                    @if (showApproveForm) {
+                      <div class="inline-verification-form approve-panel">
+                        <span class="form-title">Select credit date for insurance payout:</span>
+                        <div class="input-row">
+                          <input type="date" [(ngModel)]="creditDate" class="credit-date-input">
+                        </div>
+                        <div class="form-buttons">
+                          <button mat-raised-button color="primary" class="confirm-approve-btn flex-1" (click)="confirmApprove()">
+                            <mat-icon>check_circle</mat-icon> Confirm Approval
+                          </button>
+                          <button mat-stroked-button class="cancel-verification-btn" (click)="showApproveForm = false">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Reject Inline Form -->
+                    @if (showRejectForm) {
+                      <div class="inline-verification-form reject-panel">
+                        <span class="form-title">Reason for claim rejection:</span>
+                        <div class="input-row">
+                          <textarea [(ngModel)]="rejectionReason" class="rejection-reason-textarea" placeholder="Explain why the claim is rejected (e.g. low image resolution, policy mismatch)..." rows="3"></textarea>
+                        </div>
+                        <div class="form-buttons">
+                          <button mat-raised-button color="warn" class="confirm-reject-btn flex-1" (click)="confirmReject()">
+                            <mat-icon>cancel</mat-icon> Confirm Rejection
+                          </button>
+                          <button mat-stroked-button class="cancel-verification-btn" (click)="showRejectForm = false">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Action buttons (visible when forms are hidden) -->
+                    <div class="footer-buttons" *ngIf="!showApproveForm && !showRejectForm">
+                      <button
+                        mat-raised-button
+                        color="primary"
+                        class="approve-btn flex-1"
+                        [disabled]="selectedClaim.status === 'Approved' || selectedClaim.status === 'Rejected'"
+                        (click)="showApproveForm = true">
+                        <mat-icon>check_circle</mat-icon>
+                        Verify & Approve
+                      </button>
+                      <button
+                        mat-raised-button
+                        color="warn"
+                        class="reject-btn"
+                        [disabled]="selectedClaim.status === 'Approved' || selectedClaim.status === 'Rejected'"
+                        (click)="showRejectForm = true">
+                        <mat-icon>cancel</mat-icon>
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </mat-card>
+              </div>
+            }
           </div>
         }
       </div>
@@ -140,6 +429,21 @@
                     <span class="status-chip" [class]="user.is_active ? 'active' : 'inactive'">
                       {{ user.is_active ? 'Active' : 'Inactive' }}
                     </span>
+                  </td>
+                </ng-container>
+
+                <!-- Actions -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let user">
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="deleteUser(user)"
+                      title="Delete User account"
+                      style="color: #ef4444;">
+                      <mat-icon style="font-size: 20px; width: 20px; height: 20px;">delete</mat-icon>
+                    </button>
                   </td>
                 </ng-container>
 
@@ -206,4 +510,29 @@
       </div>
     </mat-tab>
   </mat-tab-group>
+
+  <!-- Custom Premium Deletion Modal Overlay -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmModal" (click)="cancelDelete()">
+    <div class="modal-card glass-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <mat-icon class="warning-icon">warning</mat-icon>
+        <h3>Confirm Permanent Deletion</h3>
+      </div>
+      <div class="modal-body" *ngIf="userToDelete">
+        <p>Are you sure you want to permanently delete the account for <strong>{{ userToDelete.full_name }}</strong> ({{ userToDelete.email }})?</p>
+        <div class="warning-box">
+          <mat-icon>error_outline</mat-icon>
+          <span><strong>CRITICAL ALERT:</strong> Deleting this user will trigger cascade deletion of all their related policies, claims, documents, and notifications. This action is irreversible.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button color="warn" class="confirm-delete-btn" (click)="confirmDelete()">
+          Delete Account
+        </button>
+        <button mat-stroked-button class="cancel-btn" (click)="cancelDelete()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
