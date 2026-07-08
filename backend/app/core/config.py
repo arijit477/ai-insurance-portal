@@ -57,6 +57,10 @@ class Settings(BaseSettings):
 
     VECTOR_DB_PATH: Path = Path("vector_db")
 
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    SUPABASE_BUCKET: str = "claims"
+
     # ==================================================
     # Vision AI
     # ==================================================

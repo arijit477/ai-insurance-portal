@@ -16,3 +16,10 @@ services:
         sync: false # User must specify their OpenAI key on Render
       - key: DISABLE_HEAVY_MODELS
         value: "true"
+      - key: SUPABASE_URL
+        sync: false # User must specify their Supabase API URL on Render
+      - key: SUPABASE_KEY
+        sync: false # User must specify their Supabase Anon/Service Key on Render
+      - key: SUPABASE_BUCKET
+        value: "claims"
+

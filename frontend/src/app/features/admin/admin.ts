@@ -15,6 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 
 import { ClaimService } from '../../core/services/claim.service';
 import { AdminService } from '../../core/services/admin.service';
+import { UploadService } from '../../core/services/upload.service';
 import { Claim } from '../../core/models/claim/claim';
 import { API } from '../../core/constants/api';
 
@@ -41,6 +42,7 @@ export class Admin implements OnInit {
   private fb = inject(FormBuilder);
   private claimService = inject(ClaimService);
   private adminService = inject(AdminService);
+  private uploadService = inject(UploadService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
 
@@ -58,6 +60,9 @@ export class Admin implements OnInit {
   rejectionReason = '';
   showDeleteConfirmModal = false;
   userToDelete: any = null;
+  showFileDeleteConfirmModal = false;
+  fileToDelete: any = null;
+  fileDeleteType: 'document' | 'image' | null = null;
 
   claimColumns = [
     'claim_number',
@@ -257,9 +262,92 @@ export class Admin implements OnInit {
     });
   }
 
-  getFileUrl(filePath: string): string {
+  deleteDocument(doc: any): void {
+    this.fileToDelete = doc;
+    this.fileDeleteType = 'document';
+    this.showFileDeleteConfirmModal = true;
+    this.cdr.markForCheck();
+  }
+
+  deleteImage(img: any): void {
+    this.fileToDelete = img;
+    this.fileDeleteType = 'image';
+    this.showFileDeleteConfirmModal = true;
+    this.cdr.markForCheck();
+  }
+
+  cancelFileDelete(): void {
+    this.showFileDeleteConfirmModal = false;
+    this.fileToDelete = null;
+    this.fileDeleteType = null;
+    this.cdr.markForCheck();
+  }
+
+  confirmFileDelete(): void {
+    if (!this.fileToDelete || !this.fileDeleteType) return;
+
+    if (this.fileDeleteType === 'document') {
+      this.uploadService.deleteDocument(this.fileToDelete.id).subscribe({
+        next: () => {
+          this.snackBar.open('Document deleted successfully.', 'Close', { duration: 3000 });
+          this.showFileDeleteConfirmModal = false;
+          
+          if (this.selectedClaim) {
+            this.selectedClaim.documents = this.selectedClaim.documents.filter((d: any) => d.id !== this.fileToDelete.id);
+          }
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.loadClaims();
+        },
+        error: (err) => {
+          console.error(err);
+          this.snackBar.open('Failed to delete document.', 'Close', { duration: 3000 });
+          this.showFileDeleteConfirmModal = false;
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.cdr.markForCheck();
+        }
+      });
+    } else if (this.fileDeleteType === 'image') {
+      this.uploadService.deleteImage(this.fileToDelete.id).subscribe({
+        next: () => {
+          this.snackBar.open('Image deleted successfully.', 'Close', { duration: 3000 });
+          this.showFileDeleteConfirmModal = false;
+          
+          if (this.selectedClaim) {
+            this.selectedClaim.images = this.selectedClaim.images.filter((i: any) => i.id !== this.fileToDelete.id);
+          }
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.loadClaims();
+        },
+        error: (err) => {
+          console.error(err);
+          this.snackBar.open('Failed to delete image.', 'Close', { duration: 3000 });
+          this.showFileDeleteConfirmModal = false;
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.cdr.markForCheck();
+        }
+      });
+    }
+  }
+
+  // getFileUrl(filePath: string): string {
+  //   if (!filePath) return '';
+  //   const normalized = filePath.replace(/\\/g, '/');
+  //   return `${API.BASE_URL}/${normalized}`;
+  // }
+
+    getFileUrl(filePath: string): string {
     if (!filePath) return '';
+    // If the path is already a cloud URL, return it directly!
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+      return filePath;
+    }
+    // Fallback for older local relative uploads
     const normalized = filePath.replace(/\\/g, '/');
     return `${API.BASE_URL}/${normalized}`;
   }
+
 }

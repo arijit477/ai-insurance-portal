@@ -1,5 +1,9 @@
 import time
 from pathlib import Path
+import os
+import tempfile
+from contextlib import contextmanager
+import httpx
 
 import cv2
 
@@ -10,6 +14,38 @@ from app.schemas.damage import (
     DamageSummary,
     DetectedDamage,
 )
+
+@contextmanager
+def temp_local_file(file_path: str):
+    """
+    If file_path is a URL, downloads it to a temporary file and yields the path.
+    Otherwise, yields file_path as-is.
+    """
+    if file_path.startswith("http://") or file_path.startswith("https://"):
+        # Strip query parameters for extension extraction
+        clean_path = file_path.split("?")[0]
+        suffix = Path(clean_path).suffix.lower()
+        if not suffix:
+            suffix = ".tmp"
+            
+        temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
+        os.close(temp_fd)
+        
+        try:
+            with httpx.Client() as client:
+                response = client.get(file_path)
+                response.raise_for_status()
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
+            yield temp_path
+        finally:
+            try:
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+            except Exception:
+                pass
+    else:
+        yield file_path
 
 
 class VisionService:
@@ -60,6 +96,13 @@ class VisionService:
                 annotated_image_path=image_path,
                 processing_time=0.02
             )
+
+        # Handle remote URL if model is active
+        if image_path.startswith("http://") or image_path.startswith("https://"):
+            with temp_local_file(image_path) as local_path:
+                result = self.analyze_image(local_path)
+                result.image_path = image_path
+                return result
 
         start = time.perf_counter()
 

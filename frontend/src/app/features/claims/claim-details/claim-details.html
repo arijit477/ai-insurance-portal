@@ -82,7 +82,7 @@
               <button
                 mat-icon-button
                 color="warn"
-                (click)="deleteDocument(doc.id)"
+                (click)="deleteDocument(doc)"
                 class="delete-btn"
               >
                 <mat-icon>delete</mat-icon>
@@ -90,7 +90,7 @@
             </li>
             <li *ngFor="let img of claim.images" class="file-item">
               <span class="file-info">📷 <strong>Damage Image</strong>: {{ img.file_name }}</span>
-              <button mat-icon-button color="warn" (click)="deleteImage(img.id)" class="delete-btn">
+              <button mat-icon-button color="warn" (click)="deleteImage(img)" class="delete-btn">
                 <mat-icon>delete</mat-icon>
               </button>
             </li>
@@ -142,4 +142,33 @@
       }
     </mat-card-content>
   </mat-card>
+
+  <!-- Custom Premium Deletion Modal Overlay (for user files) -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmModal" (click)="cancelDelete()">
+    <div class="modal-card glass-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <mat-icon class="warning-icon">warning</mat-icon>
+        <h3>Confirm Permanent Deletion</h3>
+      </div>
+      <div class="modal-body">
+        @if (fileDeleteType === 'all') {
+          <p>Are you sure you want to permanently clear <strong>all uploaded files</strong> for this claim?</p>
+        } @else if (fileToDelete) {
+          <p>Are you sure you want to permanently delete the {{ fileDeleteType }}: <strong>{{ fileToDelete.file_name }}</strong>?</p>
+        }
+        <div class="warning-box">
+          <mat-icon>error_outline</mat-icon>
+          <span><strong>WARNING:</strong> This action cannot be undone. The file will be permanently removed from storage and database.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button color="warn" class="confirm-delete-btn" (click)="confirmDelete()">
+          @if (fileDeleteType === 'all') { Clear All Files } @else { Delete File }
+        </button>
+        <button mat-stroked-button class="cancel-btn" (click)="cancelDelete()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 }

@@ -1036,4 +1036,11 @@
   background-color: rgba(16, 185, 129, 0.05);
 }
 
+.file-action-btn.delete-btn:hover {
+  color: #ef4444;
+  border-color: #f87171;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+
 

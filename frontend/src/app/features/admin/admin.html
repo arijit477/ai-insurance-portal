@@ -266,13 +266,16 @@
                                 <span class="file-type">{{ doc.document_type }}</span>
                               </div>
                             </div>
-                            <div class="file-actions">
+                             <div class="file-actions">
                               <a [href]="getFileUrl(doc.file_path)" target="_blank" class="file-action-btn view-btn" title="View Document">
                                 <mat-icon>visibility</mat-icon>
                               </a>
                               <a [href]="getFileUrl(doc.file_path)" download [attr.download]="doc.file_name" class="file-action-btn download-btn" title="Download Document">
                                 <mat-icon>download</mat-icon>
                               </a>
+                              <button (click)="deleteDocument(doc)" class="file-action-btn delete-btn" title="Delete Document">
+                                <mat-icon>delete</mat-icon>
+                              </button>
                             </div>
                           </div>
                           
@@ -284,13 +287,16 @@
                                 <span class="file-type">Damage Photo</span>
                               </div>
                             </div>
-                            <div class="file-actions">
+                             <div class="file-actions">
                               <a [href]="getFileUrl(img.file_path)" target="_blank" class="file-action-btn view-btn" title="View Image">
                                 <mat-icon>visibility</mat-icon>
                               </a>
                               <a [href]="getFileUrl(img.file_path)" download [attr.download]="img.file_name" class="file-action-btn download-btn" title="Download Image">
                                 <mat-icon>download</mat-icon>
                               </a>
+                              <button (click)="deleteImage(img)" class="file-action-btn delete-btn" title="Delete Image">
+                                <mat-icon>delete</mat-icon>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -530,6 +536,31 @@
           Delete Account
         </button>
         <button mat-stroked-button class="cancel-btn" (click)="cancelDelete()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Premium Deletion Modal Overlay (for files) -->
+  <div class="modal-overlay" *ngIf="showFileDeleteConfirmModal" (click)="cancelFileDelete()">
+    <div class="modal-card glass-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <mat-icon class="warning-icon">warning</mat-icon>
+        <h3>Confirm Permanent Deletion</h3>
+      </div>
+      <div class="modal-body" *ngIf="fileToDelete">
+        <p>Are you sure you want to permanently delete the {{ fileDeleteType }}: <strong>{{ fileToDelete.file_name }}</strong>?</p>
+        <div class="warning-box">
+          <mat-icon>error_outline</mat-icon>
+          <span><strong>WARNING:</strong> This action cannot be undone. The file will be permanently removed from storage and database.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button color="warn" class="confirm-delete-btn" (click)="confirmFileDelete()">
+          Delete {{ fileDeleteType === 'document' ? 'Document' : 'Image' }}
+        </button>
+        <button mat-stroked-button class="cancel-btn" (click)="cancelFileDelete()">
           Cancel
         </button>
       </div>

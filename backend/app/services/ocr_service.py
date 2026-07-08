@@ -1,18 +1,51 @@
 from pathlib import Path
+import os
+import tempfile
+from contextlib import contextmanager
+import httpx
 
 import numpy as np
 from PIL import Image
 
 from app.core.config import settings
 
-# PyMuPDF is provided by the `fitz` module. However, the project currently has an
-# unrelated `fitz` package installed (which breaks imports by trying to import
-# `frontend`). Import it lazily so the API can still start when PDF support is
-# not required.
+# PyMuPDF is imported as `pymupdf`.
 try:
-    import fitz  # type: ignore  # PyMuPDF
+    import pymupdf  # type: ignore  # PyMuPDF
 except ModuleNotFoundError:  # pragma: no cover
-    fitz = None
+    pymupdf = None
+
+@contextmanager
+def temp_local_file(file_path: str):
+    """
+    If file_path is a URL, downloads it to a temporary file and yields the path.
+    Otherwise, yields file_path as-is.
+    """
+    if file_path.startswith("http://") or file_path.startswith("https://"):
+        # Strip query parameters for extension extraction
+        clean_path = file_path.split("?")[0]
+        suffix = Path(clean_path).suffix.lower()
+        if not suffix:
+            suffix = ".tmp"
+            
+        temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
+        os.close(temp_fd)
+        
+        try:
+            with httpx.Client() as client:
+                response = client.get(file_path)
+                response.raise_for_status()
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
+            yield temp_path
+        finally:
+            try:
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+            except Exception:
+                pass
+    else:
+        yield file_path
 
 
 
@@ -114,10 +147,10 @@ class OCRService:
         pdf_path: str,
     ) -> dict:
 
-        if fitz is None:
-            raise RuntimeError("PDF OCR support is missing (PyMuPDF / fitz is not installed).")
+        if pymupdf is None:
+            raise RuntimeError("PDF OCR support is missing (PyMuPDF is not installed).")
 
-        document = fitz.open(pdf_path)
+        document = pymupdf.open(pdf_path)
         page_count = len(document)
 
         # 1. Try PyMuPDF direct text extraction first (standard digital PDFs)
@@ -209,6 +242,10 @@ class OCRService:
         self,
         file_path: str,
     ) -> dict:
+
+        if file_path.startswith("http://") or file_path.startswith("https://"):
+            with temp_local_file(file_path) as local_path:
+                return self.extract_text(local_path)
 
         extension = Path(file_path).suffix.lower()
 

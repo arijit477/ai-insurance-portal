@@ -40,6 +40,10 @@ export class ClaimDetails implements OnInit {
 
   loading = true;
 
+  showDeleteConfirmModal = false;
+  fileToDelete: any = null;
+  fileDeleteType: 'document' | 'image' | 'all' | null = null;
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -80,46 +84,88 @@ export class ClaimDetails implements OnInit {
     });
   }
 
-  deleteDocument(documentId: number): void {
-    this.uploadService.deleteDocument(documentId).subscribe({
-      next: () => {
-        this.loadClaim(this.claim.id);
-      },
-      error: (err) => console.error('Failed to delete document:', err)
-    });
+  deleteDocument(doc: any): void {
+    this.fileToDelete = doc;
+    this.fileDeleteType = 'document';
+    this.showDeleteConfirmModal = true;
+    this.cdr.markForCheck();
   }
 
-  deleteImage(imageId: number): void {
-    this.uploadService.deleteImage(imageId).subscribe({
-      next: () => {
-        this.loadClaim(this.claim.id);
-      },
-      error: (err) => console.error('Failed to delete image:', err)
-    });
+  deleteImage(img: any): void {
+    this.fileToDelete = img;
+    this.fileDeleteType = 'image';
+    this.showDeleteConfirmModal = true;
+    this.cdr.markForCheck();
   }
 
   clearAllFiles(): void {
-    if (!confirm('Are you sure you want to clear all uploaded files?')) return;
+    this.fileToDelete = null;
+    this.fileDeleteType = 'all';
+    this.showDeleteConfirmModal = true;
+    this.cdr.markForCheck();
+  }
 
-    const deletePromises: Promise<any>[] = [];
+  cancelDelete(): void {
+    this.showDeleteConfirmModal = false;
+    this.fileToDelete = null;
+    this.fileDeleteType = null;
+    this.cdr.markForCheck();
+  }
 
-    if (this.claim.documents) {
-      for (const doc of this.claim.documents) {
-        deletePromises.push(this.uploadService.deleteDocument(doc.id).toPromise());
+  confirmDelete(): void {
+    if (!this.fileDeleteType) return;
+
+    if (this.fileDeleteType === 'document' && this.fileToDelete) {
+      this.uploadService.deleteDocument(this.fileToDelete.id).subscribe({
+        next: () => {
+          this.showDeleteConfirmModal = false;
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.loadClaim(this.claim.id);
+        },
+        error: (err) => {
+          console.error('Failed to delete document:', err);
+          this.cancelDelete();
+        }
+      });
+    } else if (this.fileDeleteType === 'image' && this.fileToDelete) {
+      this.uploadService.deleteImage(this.fileToDelete.id).subscribe({
+        next: () => {
+          this.showDeleteConfirmModal = false;
+          this.fileToDelete = null;
+          this.fileDeleteType = null;
+          this.loadClaim(this.claim.id);
+        },
+        error: (err) => {
+          console.error('Failed to delete image:', err);
+          this.cancelDelete();
+        }
+      });
+    } else if (this.fileDeleteType === 'all') {
+      const deletePromises: Promise<any>[] = [];
+
+      if (this.claim.documents) {
+        for (const doc of this.claim.documents) {
+          deletePromises.push(this.uploadService.deleteDocument(doc.id).toPromise());
+        }
       }
-    }
 
-    if (this.claim.images) {
-      for (const img of this.claim.images) {
-        deletePromises.push(this.uploadService.deleteImage(img.id).toPromise());
+      if (this.claim.images) {
+        for (const img of this.claim.images) {
+          deletePromises.push(this.uploadService.deleteImage(img.id).toPromise());
+        }
       }
-    }
 
-    Promise.all(deletePromises).then(() => {
-      this.loadClaim(this.claim.id);
-    }).catch(err => {
-      console.error('Failed to clear some files:', err);
-      this.loadClaim(this.claim.id);
-    });
+      Promise.all(deletePromises).then(() => {
+        this.showDeleteConfirmModal = false;
+        this.fileDeleteType = null;
+        this.loadClaim(this.claim.id);
+      }).catch(err => {
+        console.error('Failed to clear some files:', err);
+        this.showDeleteConfirmModal = false;
+        this.fileDeleteType = null;
+        this.loadClaim(this.claim.id);
+      });
+    }
   }
 }
