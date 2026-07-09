@@ -280,6 +280,8 @@ pyyaml==6.0.2
     #   paddleocr
     #   paddlex
     #   ultralytics
+razorpay==2.0.1
+    # via ai-insurance-portal (pyproject.toml)
 realtime==2.31.0
     # via supabase
 requests==2.34.2
@@ -289,6 +291,7 @@ requests==2.34.2
     #   modelscope-hub
     #   paddleocr
     #   paddlex
+    #   razorpay
     #   ultralytics
 rsa==4.9.1
     # via python-jose

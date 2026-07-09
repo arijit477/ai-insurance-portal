@@ -40,15 +40,44 @@ export class PolicyService {
 
   }
 
-  /**
-   * Purchase a new policy
-   */
   createPolicy(
     request: CreatePolicy,
+  ): Observable<{
+    policy_id: number;
+    policy_number: string;
+    order_id: string;
+    amount: number;
+    currency: string;
+    key_id: string;
+  }> {
+
+    return this.http.post<{
+      policy_id: number;
+      policy_number: string;
+      order_id: string;
+      amount: number;
+      currency: string;
+      key_id: string;
+    }>(
+      `${API.BASE_URL}${API.POLICIES.CREATE}`,
+      request,
+    );
+
+  }
+
+  /**
+   * Verify payment signature
+   */
+  verifyPayment(
+    request: {
+      razorpay_order_id: string;
+      razorpay_payment_id: string;
+      razorpay_signature: string;
+    }
   ): Observable<Policy> {
 
     return this.http.post<Policy>(
-      `${API.BASE_URL}${API.POLICIES.CREATE}`,
+      `${API.BASE_URL}${API.POLICIES.VERIFY_PAYMENT}`,
       request,
     );
 

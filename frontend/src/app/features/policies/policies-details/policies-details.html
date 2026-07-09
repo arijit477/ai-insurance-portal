@@ -99,5 +99,28 @@
       </mat-card-actions>
     </mat-card>
 
+    @if(showCancelDialog) {
+      <div class="confirm-dialog-backdrop">
+        <div class="confirm-dialog-container">
+          <div class="confirm-dialog-header">
+            <mat-icon class="warn-icon">warning</mat-icon>
+            <h2>Cancel Policy</h2>
+          </div>
+          <p>Are you sure you want to cancel policy <strong>#{{ policy.policy_number }}</strong>? This action cannot be undone.</p>
+          <div class="confirm-dialog-actions">
+            <button mat-button (click)="showCancelDialog = false" [disabled]="cancelling">No, Keep It</button>
+            <button mat-raised-button color="warn" (click)="confirmCancel()" [disabled]="cancelling">
+              @if(cancelling) {
+                <mat-spinner diameter="20" color="warn"></mat-spinner>
+                Processing...
+              } @else {
+                Yes, Cancel Policy
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
   </div>
 }

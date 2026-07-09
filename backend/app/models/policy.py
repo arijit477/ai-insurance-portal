@@ -66,8 +66,25 @@ class Policy(Base):
 
     status: Mapped[PolicyStatus] = mapped_column(
         SqlEnum(PolicyStatus),
-        default=PolicyStatus.ACTIVE,
+        default=PolicyStatus.PENDING,
         nullable=False,
+    )
+
+    razorpay_order_id: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
+
+    razorpay_payment_id: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    razorpay_signature: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(

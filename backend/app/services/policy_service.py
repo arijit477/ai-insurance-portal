@@ -8,7 +8,7 @@ from app.api.routes import policy
 from app.models.insurance_plan import InsurancePlan
 from app.models.policy import Policy, PolicyStatus
 from app.models.user import User, UserRole
-from app.schemas.policy import PolicyCreate
+from app.schemas.policy import PolicyCreate, PaymentVerificationRequest
 
 
 class PolicyService:
@@ -33,7 +33,7 @@ class PolicyService:
         db: Session,
         current_user: User,
         policy_data: PolicyCreate,
-    ) -> Policy:
+    ) -> dict:
 
         plan = (
             db.query(InsurancePlan)
@@ -54,8 +54,33 @@ class PolicyService:
             )
 
         start_date = date.today()
-
         end_date = start_date + timedelta(days=plan.duration_months * 30)
+
+        # Initialize Razorpay Client and generate Order
+        import razorpay
+        from app.core.config import settings
+
+        amount_paise = int(plan.premium * 100)
+        currency = "INR"
+
+        try:
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            order_data = {
+                "amount": amount_paise,
+                "currency": currency,
+                "payment_capture": 1
+            }
+            order = client.order.create(data=order_data)
+            razorpay_order_id = order["id"]
+        except Exception as e:
+            if settings.RAZORPAY_KEY_ID == "rzp_test_placeholder_key" or not settings.RAZORPAY_KEY_ID:
+                # Graceful mock fallback for placeholder credentials in local dev
+                razorpay_order_id = f"order_mock_{uuid4().hex[:12].upper()}"
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to create payment order: {str(e)}",
+                )
 
         policy = Policy(
             policy_number=PolicyService.generate_policy_number(),
@@ -64,10 +89,78 @@ class PolicyService:
             premium_paid=plan.premium,
             start_date=start_date,
             end_date=end_date,
-            status=PolicyStatus.ACTIVE,
+            status=PolicyStatus.PENDING,
+            razorpay_order_id=razorpay_order_id,
         )
 
         db.add(policy)
+        db.commit()
+        db.refresh(policy)
+
+        return {
+            "policy_id": policy.id,
+            "policy_number": policy.policy_number,
+            "order_id": razorpay_order_id,
+            "amount": amount_paise,
+            "currency": currency,
+            "key_id": settings.RAZORPAY_KEY_ID
+        }
+
+    @staticmethod
+    def verify_policy_payment(
+        db: Session,
+        verification_data: PaymentVerificationRequest,
+        current_user: User,
+    ) -> Policy:
+        import razorpay
+        from app.core.config import settings
+
+        # Find policy by order_id
+        policy = (
+            db.query(Policy)
+            .filter(Policy.razorpay_order_id == verification_data.razorpay_order_id)
+            .first()
+        )
+
+        if not policy:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Policy with this payment order ID not found.",
+            )
+
+        if policy.customer_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to verify this payment.",
+            )
+
+        # Signature verification
+        if verification_data.razorpay_order_id.startswith("order_mock_"):
+            # Mock successful validation for development placeholders
+            policy.status = PolicyStatus.ACTIVE
+            policy.razorpay_payment_id = verification_data.razorpay_payment_id
+            policy.razorpay_signature = verification_data.razorpay_signature
+            db.commit()
+            db.refresh(policy)
+            return policy
+
+        try:
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            params_dict = {
+                'razorpay_order_id': verification_data.razorpay_order_id,
+                'razorpay_payment_id': verification_data.razorpay_payment_id,
+                'razorpay_signature': verification_data.razorpay_signature
+            }
+            client.utility.verify_payment_signature(params_dict)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Payment signature verification failed.",
+            )
+
+        policy.status = PolicyStatus.ACTIVE
+        policy.razorpay_payment_id = verification_data.razorpay_payment_id
+        policy.razorpay_signature = verification_data.razorpay_signature
         db.commit()
         db.refresh(policy)
 

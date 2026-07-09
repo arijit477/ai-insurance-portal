@@ -52,6 +52,10 @@ class PolicyResponse(BaseModel):
 
     status: PolicyStatus
 
+    razorpay_order_id: Optional[str] = None
+    razorpay_payment_id: Optional[str] = None
+    razorpay_signature: Optional[str] = None
+
     created_at: datetime
 
     updated_at: datetime
@@ -85,3 +89,22 @@ class PolicyDetailsResponse(BaseModel):
     end_date: date
 
     status: PolicyStatus
+
+    razorpay_order_id: Optional[str] = None
+    razorpay_payment_id: Optional[str] = None
+    razorpay_signature: Optional[str] = None
+
+
+class RazorpayOrderResponse(BaseModel):
+    policy_id: int
+    policy_number: str
+    order_id: str
+    amount: int  # in paise
+    currency: str
+    key_id: str
+
+
+class PaymentVerificationRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str

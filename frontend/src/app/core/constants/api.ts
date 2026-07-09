@@ -46,6 +46,7 @@ export const API = {
     CREATE: '/policies/',
     UPDATE: '/policies',
     DELETE: '/policies',
+    VERIFY_PAYMENT: '/policies/verify-payment',
   },
 
   PLANS: {

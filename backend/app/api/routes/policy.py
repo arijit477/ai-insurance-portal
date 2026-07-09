@@ -13,6 +13,8 @@ from app.models.user import User
 from app.schemas.policy import (
     PolicyCreate,
     PolicyResponse,
+    RazorpayOrderResponse,
+    PaymentVerificationRequest,
 )
 from app.services.policy_service import PolicyService
 
@@ -24,7 +26,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    response_model=PolicyResponse,
+    response_model=RazorpayOrderResponse,
     status_code=status.HTTP_201_CREATED,
 )
 def purchase_policy(
@@ -36,6 +38,22 @@ def purchase_policy(
         db,
         current_user,
         policy,
+    )
+
+
+@router.post(
+    "/verify-payment",
+    response_model=PolicyResponse,
+)
+def verify_payment(
+    verification: PaymentVerificationRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return PolicyService.verify_policy_payment(
+        db,
+        verification,
+        current_user,
     )
 
 

@@ -60,18 +60,21 @@ export class PolicyDetailsComponent implements OnInit {
     });
   }
 
-  cancelPolicy(): void {
-    if (!confirm('Are you sure you want to request cancellation for this policy?')) {
-      return;
-    }
+  showCancelDialog = false;
 
+  cancelPolicy(): void {
+    this.showCancelDialog = true;
+    this.cdr.markForCheck();
+  }
+
+  confirmCancel(): void {
     this.cancelling = true;
     this.cdr.markForCheck();
 
     this.policyService.cancelPolicy(this.policy.id).subscribe({
       next: (updatedPolicy: Policy) => {
         this.snackBar.open('Cancellation requested successfully.', 'Close', { duration: 3000 });
-        // Reload details
+        this.showCancelDialog = false;
         this.loadPolicy(this.policy.id);
       },
       error: (err: any) => {
