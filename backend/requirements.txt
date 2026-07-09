@@ -36,9 +36,6 @@ certifi==2026.6.17
     #   httpcore
     #   httpx
     #   requests
-
-psycopg2>=2.9.12
-
 cffi==2.0.0
     # via
     #   bcrypt
@@ -231,6 +228,8 @@ psycopg==3.3.4
     # via ai-insurance-portal (pyproject.toml)
 psycopg-binary==3.3.4
     # via psycopg
+psycopg2==2.9.12
+    # via ai-insurance-portal (pyproject.toml)
 py-cpuinfo==9.0.0
     # via paddlex
 pyasn1==0.6.3

@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ClaimService } from '../../core/services/claim.service';
 import { AdminService } from '../../core/services/admin.service';
 import { UploadService } from '../../core/services/upload.service';
+import { PlanService } from '../../core/services/plan.service';
 import { Claim } from '../../core/models/claim/claim';
 import { API } from '../../core/constants/api';
 
@@ -43,15 +44,19 @@ export class Admin implements OnInit {
   private claimService = inject(ClaimService);
   private adminService = inject(AdminService);
   private uploadService = inject(UploadService);
+  private planService = inject(PlanService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
 
   loadingClaims = true;
   loadingUsers = true;
+  loadingPlans = true;
   creatingAgent = false;
+  creatingPlan = false;
 
   claimsDataSource = new MatTableDataSource<any>();
   usersDataSource = new MatTableDataSource<any>();
+  plansDataSource = new MatTableDataSource<any>();
 
   selectedClaim: any = null;
   showApproveForm = false;
@@ -63,6 +68,9 @@ export class Admin implements OnInit {
   showFileDeleteConfirmModal = false;
   fileToDelete: any = null;
   fileDeleteType: 'document' | 'image' | null = null;
+
+  showPlanDeleteConfirmModal = false;
+  planToDelete: any = null;
 
   claimColumns = [
     'claim_number',
@@ -83,15 +91,36 @@ export class Admin implements OnInit {
     'actions',
   ];
 
+  planColumns = [
+    'id',
+    'plan_name',
+    'category',
+    'premium',
+    'coverage_amount',
+    'duration_months',
+    'is_active',
+    'actions',
+  ];
+
   agentForm = this.fb.group({
     full_name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
+  planForm = this.fb.group({
+    plan_name: ['', [Validators.required, Validators.minLength(3)]],
+    category: ['Health', [Validators.required]],
+    premium: [1000, [Validators.required, Validators.min(0)]],
+    coverage_amount: [10000, [Validators.required, Validators.min(0)]],
+    duration_months: [12, [Validators.required, Validators.min(1)]],
+    description: ['', [Validators.required, Validators.minLength(10)]],
+  });
+
   ngOnInit(): void {
     this.loadClaims();
     this.loadUsers();
+    this.loadPlans();
   }
 
   loadClaims(): void {
@@ -348,6 +377,112 @@ export class Admin implements OnInit {
     // Fallback for older local relative uploads
     const normalized = filePath.replace(/\\/g, '/');
     return `${API.BASE_URL}/${normalized}`;
+  }
+
+  loadPlans(): void {
+    this.loadingPlans = true;
+    this.cdr.markForCheck();
+
+    this.planService.getPlans().subscribe({
+      next: (response) => {
+        this.plansDataSource.data = response;
+        this.loadingPlans = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load plans:', err);
+        this.snackBar.open('Failed to load insurance plans database.', 'Close', { duration: 3000 });
+        this.loadingPlans = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  onCreatePlanSubmit(): void {
+    if (this.planForm.invalid) {
+      return;
+    }
+
+    this.creatingPlan = true;
+    this.cdr.markForCheck();
+
+    const rawForm = this.planForm.getRawValue();
+    const request = {
+      plan_name: rawForm.plan_name!,
+      category: rawForm.category! as any,
+      premium: Number(rawForm.premium!),
+      coverage_amount: Number(rawForm.coverage_amount!),
+      duration_months: Number(rawForm.duration_months!),
+      description: rawForm.description!,
+    };
+
+    this.planService.createPlan(request).subscribe({
+      next: () => {
+        this.snackBar.open('Insurance plan created successfully.', 'Close', { duration: 3000 });
+        this.planForm.reset({
+          plan_name: '',
+          category: 'Health',
+          premium: 1000,
+          coverage_amount: 10000,
+          duration_months: 12,
+          description: '',
+        });
+        this.creatingPlan = false;
+        this.loadPlans();
+      },
+      error: (err) => {
+        console.error(err);
+        this.snackBar.open(err.error?.detail ?? 'Failed to create insurance plan.', 'Close', { duration: 3000 });
+        this.creatingPlan = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  deletePlan(plan: any): void {
+    this.planToDelete = plan;
+    this.showPlanDeleteConfirmModal = true;
+    this.cdr.markForCheck();
+  }
+
+  cancelPlanDelete(): void {
+    this.showPlanDeleteConfirmModal = false;
+    this.planToDelete = null;
+    this.cdr.markForCheck();
+  }
+
+  confirmPlanDelete(): void {
+    if (!this.planToDelete) return;
+
+    this.planService.deletePlan(this.planToDelete.id).subscribe({
+      next: () => {
+        this.snackBar.open('Insurance plan deleted successfully.', 'Close', { duration: 3000 });
+        this.showPlanDeleteConfirmModal = false;
+        this.planToDelete = null;
+        this.loadPlans();
+      },
+      error: (err) => {
+        console.error(err);
+        this.snackBar.open('Failed to delete insurance plan.', 'Close', { duration: 3000 });
+        this.showPlanDeleteConfirmModal = false;
+        this.planToDelete = null;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  togglePlanStatus(plan: any): void {
+    const nextStatus = !plan.is_active;
+    this.planService.updatePlan(plan.id, { is_active: nextStatus }).subscribe({
+      next: () => {
+        this.snackBar.open(`Plan ${nextStatus ? 'activated' : 'deactivated'} successfully.`, 'Close', { duration: 3000 });
+        this.loadPlans();
+      },
+      error: (err) => {
+        console.error(err);
+        this.snackBar.open('Failed to update insurance plan status.', 'Close', { duration: 3000 });
+      }
+    });
   }
 
 }
