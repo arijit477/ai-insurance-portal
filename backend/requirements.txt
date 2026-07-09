@@ -36,6 +36,9 @@ certifi==2026.6.17
     #   httpcore
     #   httpx
     #   requests
+
+psycopg2>=2.9.12
+
 cffi==2.0.0
     # via
     #   bcrypt
