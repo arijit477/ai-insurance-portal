@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from uuid import uuid4
 
+# pyrefly: ignore [missing-import]
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 

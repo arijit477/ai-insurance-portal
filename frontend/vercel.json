@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "outputDirectory": "dist/ai-insurance-ui/browser",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.csr.html" }
   ]
 }
