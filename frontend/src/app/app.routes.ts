@@ -25,7 +25,7 @@ import { Layout } from './shared/layout/layout';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/dashboard',
     pathMatch: 'full',
   },
 

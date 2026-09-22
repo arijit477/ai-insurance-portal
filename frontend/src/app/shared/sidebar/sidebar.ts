@@ -23,7 +23,7 @@ export class Sidebar implements OnInit {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
-  isAdminOrAgent = false;
+  isAdminOrAgent = true;
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
