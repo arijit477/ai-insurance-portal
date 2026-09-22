@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist/ai-insurance-ui/browser",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.csr.html" }
+  ]
+}
