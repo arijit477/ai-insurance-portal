@@ -1,7 +1,5 @@
 export const API = {
-  BASE_URL: typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000'
-    : 'https://ai-insurance-portal.onrender.com',
+  BASE_URL: 'https://ai-insurance-portal.onrender.com',
   API_V1: '/api/v1',
 
   AUTH: {
