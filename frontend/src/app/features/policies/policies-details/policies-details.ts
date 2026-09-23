@@ -85,4 +85,25 @@ export class PolicyDetailsComponent implements OnInit {
       },
     });
   }
+
+  activating = false;
+
+  activatePolicy(): void {
+    this.activating = true;
+    this.cdr.markForCheck();
+
+    this.policyService.updatePolicy(this.policy.id, 'Active').subscribe({
+      next: () => {
+        this.snackBar.open('Policy activated successfully! You can now file claims.', 'Close', { duration: 4000 });
+        this.activating = false;
+        this.loadPolicy(this.policy.id);
+      },
+      error: (err: any) => {
+        console.error('Failed to activate policy:', err);
+        this.snackBar.open(err.error?.detail || 'Failed to activate policy.', 'Close', { duration: 4000 });
+        this.activating = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
 }

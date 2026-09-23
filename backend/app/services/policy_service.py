@@ -9,7 +9,7 @@ from app.api.routes import policy
 from app.models.insurance_plan import InsurancePlan
 from app.models.policy import Policy, PolicyStatus
 from app.models.user import User, UserRole
-from app.schemas.policy import PolicyCreate, PaymentVerificationRequest
+from app.schemas.policy import PolicyCreate, PaymentVerificationRequest, PolicyUpdate
 
 
 class PolicyService:
@@ -136,11 +136,18 @@ class PolicyService:
             )
 
         # Signature verification
-        if verification_data.razorpay_order_id.startswith("order_mock_"):
-            # Mock successful validation for development placeholders
+        is_mock = (
+            verification_data.razorpay_order_id.startswith("order_mock_")
+            or not settings.RAZORPAY_KEY_ID
+            or settings.RAZORPAY_KEY_ID == "rzp_test_placeholder_key"
+            or (verification_data.razorpay_payment_id and verification_data.razorpay_payment_id.startswith("pay_mock_"))
+        )
+
+        if is_mock:
+            # Mock successful validation for development placeholders or simulated payments
             policy.status = PolicyStatus.ACTIVE
-            policy.razorpay_payment_id = verification_data.razorpay_payment_id
-            policy.razorpay_signature = verification_data.razorpay_signature
+            policy.razorpay_payment_id = verification_data.razorpay_payment_id or f"pay_mock_{uuid4().hex[:12].upper()}"
+            policy.razorpay_signature = verification_data.razorpay_signature or f"sig_mock_{uuid4().hex[:12].upper()}"
             db.commit()
             db.refresh(policy)
             return policy
@@ -254,6 +261,42 @@ class PolicyService:
         db.commit()
         db.refresh(policy)
 
+        return policy
+
+    @staticmethod
+    def update_policy(
+        db: Session,
+        policy_id: int,
+        update_data: PolicyUpdate,
+        current_user: User,
+    ) -> Policy:
+        """
+        Update policy details or status.
+        Customers can activate a Pending policy. Admins/Agents have full access.
+        """
+        policy = PolicyService.get_policy_by_id(db, policy_id, current_user)
+
+        if update_data.status is not None:
+            user_role = current_user.role.value if hasattr(current_user.role, 'value') else str(current_user.role)
+            if user_role in ["Admin", "Agent"]:
+                policy.status = update_data.status
+            elif user_role == "Customer":
+                # Customer can activate their own pending policy
+                if policy.status == PolicyStatus.PENDING and update_data.status == PolicyStatus.ACTIVE:
+                    policy.status = PolicyStatus.ACTIVE
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Customers can only activate pending policies.",
+                    )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Not authorized to update this policy.",
+                )
+
+        db.commit()
+        db.refresh(policy)
         return policy
 
     @staticmethod

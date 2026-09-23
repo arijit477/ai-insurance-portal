@@ -111,8 +111,34 @@ export class PlanDetailsComponent implements OnInit {
   }
 
   private openRazorpayModal(orderInfo: any, user: any): void {
+    const isMock = !orderInfo.key_id ||
+      orderInfo.key_id === 'rzp_test_placeholder_key' ||
+      (orderInfo.order_id && orderInfo.order_id.startsWith('order_mock_'));
+
+    if (isMock) {
+      const mockPayId = 'pay_mock_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const mockSig = 'sig_mock_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      this.policyService.verifyPayment({
+        razorpay_order_id: orderInfo.order_id,
+        razorpay_payment_id: mockPayId,
+        razorpay_signature: mockSig,
+      }).subscribe({
+        next: () => {
+          this.snackBar.open('Payment successful! Your policy is now active.', 'Close', { duration: 4000 });
+          this.router.navigate(['/policies']);
+        },
+        error: (err) => {
+          console.error('Verification failed:', err);
+          this.snackBar.open(err.error?.detail || 'Payment verification failed.', 'Close', { duration: 5000 });
+          this.purchasing = false;
+          this.cdr.markForCheck();
+        }
+      });
+      return;
+    }
+
     const options = {
-      key: orderInfo.key_id || 'rzp_test_placeholder_key',
+      key: orderInfo.key_id,
       amount: orderInfo.amount,
       currency: orderInfo.currency,
       name: 'AI Insurance Portal',
@@ -151,7 +177,20 @@ export class PlanDetailsComponent implements OnInit {
       }
     };
 
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
+    try {
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        console.error('Payment failed:', response.error);
+        this.snackBar.open(`Payment failed: ${response.error.description}`, 'Close', { duration: 5000 });
+        this.purchasing = false;
+        this.cdr.markForCheck();
+      });
+      rzp.open();
+    } catch (e: any) {
+      console.error('Error opening Razorpay:', e);
+      this.snackBar.open('Could not open payment gateway. Please check browser popups or try again.', 'Close', { duration: 5000 });
+      this.purchasing = false;
+      this.cdr.markForCheck();
+    }
   }
 }

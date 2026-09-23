@@ -5,9 +5,21 @@
 
   <mat-card-content>
 
+    <!-- Error banner -->
+    <div *ngIf="errorMessage" class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
     <!-- No policies warning -->
     <div *ngIf="!loadingPolicies && policiesWithPlans.length === 0" class="no-policies">
-      <p>You have no active policies. Please
+      <p *ngIf="hasPendingPolicies">
+        You have {{ pendingPoliciesCount }} {{ pendingPoliciesCount === 1 ? 'policy' : 'policies' }} pending activation/payment.
+        Policies must be <strong>Active</strong> to file a claim.
+        <a routerLink="/policies">Go to My Policies to activate</a>.
+      </p>
+      <p *ngIf="!hasPendingPolicies">
+        You have no active policies. Please
         <a routerLink="/plans">purchase a plan</a> first before filing a claim.
       </p>
     </div>

@@ -221,3 +221,25 @@ mat-card-subtitle {
     opacity: 1;
   }
 }
+
+.pending-activation-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #fffbeb;
+  color: #92400e;
+  border-left: 4px solid #f59e0b;
+  padding: 16px 24px;
+  font-size: 0.95rem;
+}
+
+.pending-activation-banner mat-icon {
+  font-size: 24px;
+  color: #f59e0b;
+}
+
+.pending-activation-banner .banner-text strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #78350f;
+}

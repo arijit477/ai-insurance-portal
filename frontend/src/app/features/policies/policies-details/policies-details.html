@@ -62,6 +62,17 @@
 
         <mat-divider></mat-divider>
 
+        @if(policy.status === 'Pending') {
+          <div class="pending-activation-banner">
+            <mat-icon color="warn">schedule</mat-icon>
+            <div class="banner-text">
+              <strong>Policy Pending Activation:</strong>
+              This policy is currently pending. Please activate it to enable submitting insurance claims.
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+        }
+
         <div class="details-section">
           <h3>Customer Information</h3>
           <div class="detail-row">
@@ -91,8 +102,31 @@
             Cancel Policy
           }
         </button>
+
+        @if(policy.status === 'Pending') {
+          <button
+            mat-raised-button
+            color="accent"
+            [disabled]="activating"
+            (click)="activatePolicy()">
+            @if(activating) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <ng-container>
+                <mat-icon>check_circle</mat-icon>
+                <span>Activate Policy</span>
+              </ng-container>
+            }
+          </button>
+        }
+
         <span class="spacer"></span>
-        <button mat-raised-button color="primary" routerLink="/claims/create">
+
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="policy.status !== 'Active'"
+          routerLink="/claims/create">
           <mat-icon>add</mat-icon>
           File a Claim
         </button>

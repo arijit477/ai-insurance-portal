@@ -54,10 +54,12 @@ class ClaimService:
                 detail="This policy does not belong to you.",
             )
 
-        if policy.status != PolicyStatus.ACTIVE:
+        policy_status_str = (policy.status.value if hasattr(policy.status, 'value') else str(policy.status)).upper()
+        if policy_status_str != "ACTIVE":
+            status_display = policy.status.value if hasattr(policy.status, 'value') else policy.status
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Policy is not active.",
+                detail=f"Policy is not active (current status: {status_display}). Only active policies are eligible for filing claims.",
             )
 
         claim = Claim(

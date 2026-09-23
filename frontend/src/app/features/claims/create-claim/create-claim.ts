@@ -9,6 +9,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 import { ClaimService } from '../../../core/services/claim.service';
 import { CreateClaim } from '../../../core/models/claim/create-claim';
@@ -22,6 +24,7 @@ interface PolicyWithPlan {
   policy_number: string;
   plan_name: string;
   category: string;
+  status: string;
 }
 
 @Component({
@@ -36,6 +39,8 @@ interface PolicyWithPlan {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSnackBarModule,
+    MatIconModule,
   ],
   templateUrl: './create-claim.html',
   styleUrl: './create-claim.css',
@@ -46,6 +51,7 @@ export class CreateClaimComponent implements OnInit {
   private router = inject(Router);
   private policyService = inject(PolicyService);
   private planService = inject(PlanService);
+  private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
 
   loading = false;
@@ -53,6 +59,9 @@ export class CreateClaimComponent implements OnInit {
   policies: Policy[] = [];
   plans: InsurancePlan[] = [];
   policiesWithPlans: PolicyWithPlan[] = [];
+  hasPendingPolicies = false;
+  pendingPoliciesCount = 0;
+  errorMessage: string | null = null;
 
   ngOnInit(): void {
     forkJoin({
@@ -60,17 +69,26 @@ export class CreateClaimComponent implements OnInit {
       plans: this.planService.getPlans()
     }).subscribe({
       next: (result) => {
-        this.policies = result.policies;
-        this.plans = result.plans;
+        this.policies = result.policies || [];
+        this.plans = result.plans || [];
 
         const planMap = new Map(this.plans.map(p => [p.id, p]));
-        this.policiesWithPlans = this.policies.map(pol => {
+
+        const pending = this.policies.filter(pol => (pol.status || '').toLowerCase() === 'pending');
+        this.hasPendingPolicies = pending.length > 0;
+        this.pendingPoliciesCount = pending.length;
+
+        // Only active policies are eligible for filing claims
+        const activePolicies = this.policies.filter(pol => (pol.status || '').toLowerCase() === 'active');
+
+        this.policiesWithPlans = activePolicies.map(pol => {
           const plan = planMap.get(pol.plan_id);
           return {
             id: pol.id,
             policy_number: pol.policy_number,
-            plan_name: plan ? plan.plan_name : 'Unknown Plan',
-            category: plan ? plan.category : 'Unknown'
+            plan_name: plan ? plan.plan_name : 'Insurance Plan',
+            category: plan ? plan.category : 'General',
+            status: pol.status
           };
         });
 
@@ -79,6 +97,7 @@ export class CreateClaimComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load policies or plans:', err);
+        this.snackBar.open('Failed to load policies. Please refresh.', 'Close', { duration: 4000 });
         this.loadingPolicies = false;
         this.cdr.markForCheck();
       },
@@ -94,10 +113,12 @@ export class CreateClaimComponent implements OnInit {
 
   submit(): void {
     if (this.claimForm.invalid) {
+      this.claimForm.markAllAsTouched();
       return;
     }
 
     this.loading = true;
+    this.errorMessage = null;
     this.cdr.markForCheck();
 
     const rawForm = this.claimForm.getRawValue();
@@ -113,14 +134,19 @@ export class CreateClaimComponent implements OnInit {
 
     this.claimService.createClaim(request).subscribe({
       next: (claim) => {
+        this.snackBar.open('Claim submitted successfully!', 'Close', { duration: 4000 });
         this.router.navigate(['/claims', claim.id]);
       },
       error: (err) => {
-        console.error(err);
+        console.error('Failed to submit claim:', err);
+        const detailMsg = err.error?.detail || err.error?.message || 'Failed to submit claim. Please check the details and try again.';
+        this.errorMessage = detailMsg;
+        this.snackBar.open(detailMsg, 'Close', { duration: 6000 });
         this.loading = false;
         this.cdr.markForCheck();
       },
     });
   }
 }
+
 

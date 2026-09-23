@@ -13,6 +13,7 @@ from app.models.user import User
 from app.schemas.policy import (
     PolicyCreate,
     PolicyResponse,
+    PolicyUpdate,
     RazorpayOrderResponse,
     PaymentVerificationRequest,
 )
@@ -22,6 +23,25 @@ router = APIRouter(
     prefix="/policies",
     tags=["Policies"],
 )
+
+
+@router.put(
+    "/{policy_id}",
+    response_model=PolicyResponse,
+)
+def update_policy(
+    policy_id: int,
+    update_data: PolicyUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return PolicyService.update_policy(
+        db,
+        policy_id,
+        update_data,
+        current_user,
+    )
+
 
 
 @router.post(
